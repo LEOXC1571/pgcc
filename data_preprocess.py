@@ -8,6 +8,7 @@ import datetime as dt
 import os
 from features import GetItemFeature
 
+
 DataPath = 'E:/Users/LEO XU/PycharmProjects/pgcc/datasets'
 FeaturePath = 'E:/Users/LEO XU/PycharmProjects/pgcc/datasets'
 
@@ -17,5 +18,7 @@ raw_data = pd.read_csv(os.path.join(DataPath, 'ecommercedata_ho.csv'), header=0,
 print('--------data read complete--------')
 
 item_data = GetItemFeature(raw_data)
-print(item_data)
 
+print(item_data)
+item_data.to_csv(os.path.join(DataPath,'item_data.csv'),index=None)
+print('----------Item data processed----------')
