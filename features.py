@@ -1,13 +1,45 @@
 # Coded By LEO XU
 # At 2022/1/21 15:54
 
-import pandas as pd
-import numpy as np
-import os
 import datetime as dt
-from datetime import date
-from utils import init_device
+
+import pandas as pd
 from tqdm import tqdm
+
+from utils import init_device
+
+
+def get_day_gap_before(s):
+    date_received, dates = s.split('/')
+    dates = dates.split(';')
+    gaps = []
+    for d in dates:
+        # 将时间差转化为天数
+        this_gap = (dt.date(int(date_received[0:4]), int(date_received[5:7]), int(date_received[8:10])) - dt.date(
+            int(d[0:4]), int(d[5:7]), int(d[8:10]))).days
+        if this_gap > 0:
+            gaps.append(this_gap)
+    if len(gaps) == 0:
+        return 0
+    else:
+        return min(gaps)
+
+
+def get_day_gap_after(s):
+    date_received, dates = s.split('/')
+    dates = dates.split(';')
+    gaps = []
+    for d in dates:
+        this_gap = (dt.datetime(int(d[0:4]), int(d[5:7]), int(d[8:10])) - dt.datetime(int(date_received[0:4]),
+                                                                                      int(date_received[5:7]),
+                                                                                      int(date_received[8:10]))).days
+        if this_gap > 0:
+            gaps.append(this_gap)
+    if len(gaps) == 0:
+        return 0
+    else:
+        return min(gaps)
+
 
 def GetItemFeature(dataset):
     item = dataset[['InvoiceNo', 'StockCode', 'Quantity', 'InvoiceDate', 'UnitPrice', 'CustomerID']].copy()
@@ -69,9 +101,23 @@ def GetItemFeature(dataset):
     cus_count = item_cus.groupby('StockCode').agg({'CustomerID': 'count'}).reset_index()
     cus_count.rename(columns={'CustomerID': 'cus_count'}, inplace=True)
 
-    # 单笔再打
+    # order_gap 最大、最小购买间隔
+    item_datetime = item[['StockCode', 'InvoiceDate']].copy()
+    item_datetime.InvoiceDate = item_datetime.InvoiceDate.astype('str')
+    item_datetime = item_datetime.groupby(['StockCode'])['InvoiceDate'].agg(lambda x: ';'.join(x)).reset_index()
+    item_datetime.rename(columns={'InvoiceDate': 'date_list'}, inplace=True)
+    item_dt1 = dataset[['StockCode', 'InvoiceDate']].copy()
+    item_dt1 = pd.merge(item_dt1, item_datetime, on=['StockCode'], how='left')
+    item_dt1['invoicedate_datelist'] = item_dt1.InvoiceDate.astype('str') + '/' + item_dt1.date_list
+    item_dt2 = dataset[['StockCode', 'InvoiceDate']].copy()
+    item_dt2['day_gap_before'] = item_dt1.invoicedate_datelist.apply(get_day_gap_before)
+    item_dt2['day_gap_after'] = item_dt1.invoicedate_datelist.apply(get_day_gap_after)
+    max_gap = item_dt2.groupby('StockCode').agg({'day_gap_before': 'max'}).reset_index()
+    max_gap.rename(columns={'day_gap_before': 'max_order_gap'}, inplace=True)
+    min_gap = item_dt2.groupby('StockCode').agg({'day_gap_before': 'min'}).reset_index()
+    min_gap.rename(columns={'day_gap_before': 'min_order_gap'}, inplace=True)
 
-    #
+
     #
     item_feature = pd.merge(item_id, total_orders, on='StockCode', how='left')
     item_feature = pd.merge(item_feature, total_sales, on='StockCode', how='left')
@@ -88,7 +134,8 @@ def GetItemFeature(dataset):
     item_feature = pd.merge(item_feature, max_order_cus, on='StockCode', how='left')
     item_feature = pd.merge(item_feature, mean_order_cus, on='StockCode', how='left')
     item_feature = pd.merge(item_feature, median_order_cus, on='StockCode', how='left')
-    # item_feature = min_sales_figure
+    item_feature = pd.merge(item_feature, max_gap, on='StockCode', how='left')
+    item_feature = pd.merge(item_feature, min_gap, on='StockCode', how='left')
     return item_feature
 
 
@@ -100,8 +147,8 @@ def GetBertFeature(dataset: pd.DataFrame)->pd.DataFrame:
     :return: pd.DataFrame {StockCode: np.array shape 768} shape = (3676, 4)
     """
 
-    stock_df = pd.DataFrame(dataset, columns=['StockCode', 'Description'])
-    stock_df = pd.DataFrame(stock_df.drop_duplicates(['StockCode'])).reset_index()
+    stock_df = pd.DataFrame(dataset, columns=['StockCode', 'Description'], index=None)
+    stock_df = pd.DataFrame(stock_df.drop_duplicates(['StockCode']))
 
     from transformers import AutoTokenizer, AutoModel
     device = init_device(True, 0)
@@ -121,4 +168,40 @@ def GetBertFeature(dataset: pd.DataFrame)->pd.DataFrame:
     return stock_df
 
 
+def GetUserFeature(dataset):
+    user = dataset[['InvoiceNo', 'StockCode', 'Quantity', 'InvoiceDate', 'UnitPrice', 'CustomerID']].copy()
+    # read item feature
+    user_id = user[['CustomerID']].copy()
+    user_id.drop_duplicates(inplace=True)
 
+    # user order 用户总物品数和总订单量
+    uto = user[['CustomerID','InvoiceNo']].copy()
+    user_total_pur = uto.groupby('CustomerID').agg('count').reset_index()
+    user_total_pur.rename(columns={'InvoiceNo': 'user_total_pur'}, inplace=True)
+    uto.drop_duplicates(inplace=True)
+    user_total_orders = uto.groupby('CustomerID').agg('count').reset_index()
+    user_total_orders.rename(columns={'InvoiceNo': 'user_total_orders'}, inplace=True)
+
+    #user pur
+    # sales_figure 商品销售额
+    pur_figure = user[['InvoiceNo', 'CustomerID', 'Quantity', 'UnitPrice']].copy()
+    pur_figure['unit_sales'] = 0
+    pur_figure['unit_sales'] = pur_figure['Quantity'] * pur_figure['UnitPrice']
+    pur_figure.groupby(['InvoiceNo', 'CustomerID']).agg({'unit_sales': 'sum'}).reset_index()
+    # maximum/minimum/mean sales figure 单笔最高/最低/平均成交额
+    max_pur_figure = pur_figure.groupby('CustomerID').agg({'unit_sales': 'max'}).reset_index()
+    max_pur_figure.rename(columns={'unit_sales': 'maximum_figure'}, inplace=True)
+    min_pur_figure = pur_figure.groupby('CustomerID').agg({'unit_sales': 'min'}).reset_index()
+    min_pur_figure.rename(columns={'unit_sales': 'minimum_figure'}, inplace=True)
+    mean_pur_figure = pur_figure.groupby('CustomerID').agg({'unit_sales': 'mean'}).reset_index()
+    mean_pur_figure.rename(columns={'unit_sales': 'mean_figure'}, inplace=True)
+    median_pur_figure = pur_figure.groupby('CustomerID').agg({'unit_sales': 'median'}).reset_index()
+    median_pur_figure.rename(columns={'unit_sales': 'median_figure'}, inplace=True)
+    # total purchase figure 个人总购买金额
+    total_pur_figure = pur_figure.groupby('CustomerID').agg({'unit_sales': 'sum'}).reset_index()
+    total_pur_figure.rename(columns={'unit_sales': 'total_pur_figure'}, inplace=True)
+
+
+    user_feature = pd.merge(user_id, user_total_orders, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, user_total_pur, on='CustomerID', how='left')
+    return user_feature
