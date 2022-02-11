@@ -25,20 +25,6 @@ def get_day_gap_before(s):
         return min(gaps)
 
 
-def get_day_gap_after(s):
-    date_received, dates = s.split('/')
-    dates = dates.split(';')
-    gaps = []
-    for d in dates:
-        this_gap = (dt.datetime(int(d[0:4]), int(d[5:7]), int(d[8:10])) - dt.datetime(int(date_received[0:4]),
-                                                                                      int(date_received[5:7]),
-                                                                                      int(date_received[8:10]))).days
-        if this_gap > 0:
-            gaps.append(this_gap)
-    if len(gaps) == 0:
-        return 0
-    else:
-        return min(gaps)
 
 
 def GetItemFeature(dataset):
@@ -101,6 +87,22 @@ def GetItemFeature(dataset):
     cus_count = item_cus.groupby('StockCode').agg({'CustomerID': 'count'}).reset_index()
     cus_count.rename(columns={'CustomerID': 'cus_count'}, inplace=True)
 
+    # 退货率
+    refund = item[['StockCode', 'Quantity']].copy()
+    refund['absquantity'] = 0
+    refund['absquantity'] = refund['Quantity'].abs()
+    # refund['refund_quantity'] = 0
+    refund1 = refund.groupby(['StockCode'])['absquantity'].sum().reset_index()
+    refund1['refund_quantity'] = 0
+    refund2 = refund.groupby(['StockCode'])['Quantity'].sum().reset_index()
+    refund1['refund_quantity'] = (refund1['absquantity']-refund2['Quantity'])/2
+    refund1['real_quantity'] = 0
+    refund1['real_quantity'] = refund2['Quantity']+refund1['refund_quantity']
+    refund1['refund_ratio'] = refund1['refund_quantity']/refund1['real_quantity']
+    refund3 = refund1[['StockCode', 'refund_ratio']].copy()
+
+
+
     # order_gap 最大、最小购买间隔
     item_datetime = item[['StockCode', 'InvoiceDate']].copy()
     item_datetime.InvoiceDate = item_datetime.InvoiceDate.astype('str')
@@ -111,11 +113,14 @@ def GetItemFeature(dataset):
     item_dt1['invoicedate_datelist'] = item_dt1.InvoiceDate.astype('str') + '/' + item_dt1.date_list
     item_dt2 = dataset[['StockCode', 'InvoiceDate']].copy()
     item_dt2['day_gap_before'] = item_dt1.invoicedate_datelist.apply(get_day_gap_before)
-    item_dt2['day_gap_after'] = item_dt1.invoicedate_datelist.apply(get_day_gap_after)
+    # item_dt2['day_gap_after'] = item_dt1.invoicedate_datelist.apply(get_day_gap_after)
     max_gap = item_dt2.groupby('StockCode').agg({'day_gap_before': 'max'}).reset_index()
     max_gap.rename(columns={'day_gap_before': 'max_order_gap'}, inplace=True)
     min_gap = item_dt2.groupby('StockCode').agg({'day_gap_before': 'min'}).reset_index()
     min_gap.rename(columns={'day_gap_before': 'min_order_gap'}, inplace=True)
+
+
+
 
 
     #
@@ -134,6 +139,7 @@ def GetItemFeature(dataset):
     item_feature = pd.merge(item_feature, max_order_cus, on='StockCode', how='left')
     item_feature = pd.merge(item_feature, mean_order_cus, on='StockCode', how='left')
     item_feature = pd.merge(item_feature, median_order_cus, on='StockCode', how='left')
+    item_feature = pd.merge(item_feature, refund3, on='StockCode', how='left')
     item_feature = pd.merge(item_feature, max_gap, on='StockCode', how='left')
     item_feature = pd.merge(item_feature, min_gap, on='StockCode', how='left')
     return item_feature

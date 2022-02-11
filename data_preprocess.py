@@ -23,13 +23,13 @@ raw_data.columns = ['InvoiceNo', 'StockCode', 'Description', 'Quantity', 'Invoic
 # day = (raw_data['InvoiceDate'][100000]-raw_data['InvoiceDate'][1]).days
 print('--------data read complete--------')
 
-# item_data = GetItemFeature(raw_data)
-user_data = GetUserFeature(raw_data)
+item_data = GetItemFeature(raw_data)
+# user_data = GetUserFeature(raw_data)
 # bert_data = GetBertFeature(raw_data)
 
 # print(item_data)
 # item_data.to_csv(os.path.join(DataPath,'item_data.csv'),index=None)
-user_data.to_csv(os.path.join(DataPath,'user_data.csv'),index=None)
+# user_data.to_csv(os.path.join(DataPath,'user_data.csv'),index=None)
 # item_des_data = pd.merge(item_data,bert_data,on='StockCode',how='left')
 # item_des_data.to_csv(os.path.join(DataPath,'item_des_data.csv'),index=None)
 print('----------Item data processed----------')
