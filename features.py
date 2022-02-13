@@ -24,7 +24,12 @@ def get_day_gap_before(s):
     else:
         return min(gaps)
 
-
+def isrefund(pur):
+    if pur >= 0:
+        pur = 0
+    elif pur < 0:
+        pur = 1
+    return pur
 
 
 def GetItemFeature(dataset):
@@ -95,10 +100,10 @@ def GetItemFeature(dataset):
     refund1 = refund.groupby(['StockCode'])['absquantity'].sum().reset_index()
     refund1['refund_quantity'] = 0
     refund2 = refund.groupby(['StockCode'])['Quantity'].sum().reset_index()
-    refund1['refund_quantity'] = (refund1['absquantity']-refund2['Quantity'])/2
-    refund1['real_quantity'] = 0
-    refund1['real_quantity'] = refund2['Quantity']+refund1['refund_quantity']
-    refund1['refund_ratio'] = refund1['refund_quantity']/refund1['real_quantity']
+    refund1['refund_quantity'] = refund1['absquantity']-refund2['Quantity']
+    # refund1['real_quantity'] = 0
+    # refund1['real_quantity'] = refund2['Quantity']+refund1['refund_quantity']
+    refund1['refund_ratio'] = refund1['refund_quantity']/refund1['absquantity']
     refund3 = refund1[['StockCode', 'refund_ratio']].copy()
 
 
@@ -188,9 +193,8 @@ def GetUserFeature(dataset):
     user_total_orders = uto.groupby('CustomerID').agg('count').reset_index()
     user_total_orders.rename(columns={'InvoiceNo': 'user_total_orders'}, inplace=True)
 
-    #user pur
-    # sales_figure 商品销售额
-    pur_figure = user[['InvoiceNo', 'CustomerID', 'Quantity', 'UnitPrice']].copy()
+    #user pur figure 商品购买额
+    pur_figure = user[['InvoiceNo', 'StockCode', 'CustomerID', 'Quantity', 'UnitPrice']].copy()
     pur_figure['unit_sales'] = 0
     pur_figure['unit_sales'] = pur_figure['Quantity'] * pur_figure['UnitPrice']
     pur_figure.groupby(['InvoiceNo', 'CustomerID']).agg({'unit_sales': 'sum'}).reset_index()
@@ -207,7 +211,48 @@ def GetUserFeature(dataset):
     total_pur_figure = pur_figure.groupby('CustomerID').agg({'unit_sales': 'sum'}).reset_index()
     total_pur_figure.rename(columns={'unit_sales': 'total_pur_figure'}, inplace=True)
 
+    #refund 退单：退单率，（下单金额-退单金额）/（下单次数-退单次数）
+    refund = user[['InvoiceNo', 'StockCode', 'CustomerID', 'Quantity', 'UnitPrice']].copy()
+    refund['unit_sales'] = 0
+    refund['unit_sales'] = refund['Quantity'] * refund['UnitPrice']
+    refund.groupby(['InvoiceNo', 'CustomerID']).agg({'unit_sales': 'sum'}).reset_index()
+    #
+    user_pur = refund.groupby('CustomerID').agg({'unit_sales': 'sum'}).reset_index()
+    total_order = refund.groupby('CustomerID').agg({'InvoiceNo': 'count'}).reset_index()
+    total_order.rename(columns={'InvoiceNo': 'total_order'}, inplace=True)
+    #
+    refund['is_refund'] = 0
+    refund['is_refund'] = refund.unit_sales.apply(isrefund)
+    refund['refund_figure'] = 0
+    refund['refund_figure'] = refund['is_refund'] * refund['unit_sales']
+    refund_count = refund.groupby('CustomerID').agg({'is_refund': 'sum'}).reset_index()
+    refund_count.rename(columns={'is_refund': 'refund_count'}, inplace=True)
+    refund_count = pd.merge(refund_count, total_order, on='CustomerID', how='left')
+    refund_count['refund_rate'] = 0
+    refund_count['refund_rate'] = refund_count['refund_count']/(refund_count['total_order']-refund_count['refund_count'])
+    refund_count['v2'] = 0
+    refund_count['v2'] = refund_count['total_order'] - (2 * refund_count['refund_count'])
+    #
+    # refund_figure = refund.groupby('CustomerID').agg({'refund_figure': 'sum'}).reset_index()
+    refund_count = pd.merge(refund_count, total_pur_figure, on='CustomerID', how='left')
+    # refund_figure['v1'] = 0
+    # refund_figure['v1'] = refund_figure['total_pur_figure']-refund_figure['refund_figure']
+    # refund_count = pd.merge(refund_count, refund_figure, on='CustomerID', how='left')
+    refund_count['special_var'] = 0
+    refund_count['special_var'] = refund_count['total_pur_figure']/refund_count['v2']
+    refund_result = refund_count[['CustomerID', 'refund_rate', 'special_var']].copy()
+
+
+
 
     user_feature = pd.merge(user_id, user_total_orders, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, user_total_pur, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, user_total_orders, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, max_pur_figure, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, min_pur_figure, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, mean_pur_figure, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, median_pur_figure, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, total_pur_figure, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, refund_result, on='CustomerID', how='left')
+
     return user_feature
