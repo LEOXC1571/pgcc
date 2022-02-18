@@ -5053,6 +5053,63 @@ class MINDSmallDevDataset(BaseDataset):
                 item, rating = rate.split('-')
                 item = item.strip('N')
 
-                fout.write('\t'.join([current_list[0], item, rating, timestamp ])+'\n')
+                fout.write('\t'.join([current_list[0], item, rating, timestamp]) + '\n')
         fin.close()
         fout.close()
+
+
+class ECOMMERCEDataset(BaseDataset):
+    def __init__(self, input_path, output_path):
+        super(ECOMMERCEDataset, self).__init__(input_path, output_path)
+        self.dataset_name = 'ecommerce'
+        # self.duplicate_removal = duplicate_removal
+
+        # input file
+        self.inter_file = os.path.join(self.input_path, 'ecommercedata_ho.csv')
+        self.item_file = os.path.join(self.input_path, 'item_data.csv')
+        self.user_file = os.path.join(self.input_path, 'user_data.csv')
+
+        self.sep = ','
+
+        # output file
+        self.output_inter_file, self.output_item_file, self.output_user_file = self.get_output_files()
+
+        # selected feature fields
+        self.inter_fields = {0: 'item_id: token',
+                             1: 'timestamp: float',
+                             2: 'user_id: token'
+                             }
+        self.item_fields = {0: 'item_id: token',
+                            1: 'total_order: float',
+                            2: 'total_sales'}
+        self.user_fields = {0: 'user_id: token',
+                            1: 'user_total_orders',
+                            2: 'user_total_pur'}
+
+        def load_inter_data(self):
+            # itemid_data = pd.read_csv(self.inter_file, usecols=[0, 1], delimiter=self.sep, header=None,
+            #                           engine='python')
+            # timestamp_data = pd.read_csv(self.inter_file, usecols=[0, 4], delimiter=self.sep, header=None,
+            #                           engine='python')
+            # userid_data = pd.read_csv(self.inter_file, usecols=[0, 6], delimiter=self.sep, header=None,
+            #                           engine='python')
+            # processed_data = pd.merge(userid_data, itemid_data, on='InvoiceNo', how='left')
+            # processed_data = pd.merge(processed_data, timestamp_data, on='InvoiceNo', how='left')
+            # processed_data = processed_data.loc[:,[1,2,3]]
+            processed_data = pd.read_csv(self.inter_file, usecols=[1, 4, 6], delimiter=self.sep, header=None,
+                                         engine='python')
+
+            return processed_data
+
+        def load_item_data(self):
+            origin_data = pd.read_csv(self.item_file, usecols=[0, 1, 2], delimiter=self.sep, header=None,
+                                      engine='python')
+            processed_data = origin_data
+            # processed_data = origin_data.iloc[:, (0, 1)]
+            return processed_data
+
+        def load_user_data(self):
+            origin_data = pd.read_csv(self.user_file, usecols=[0, 1, 2], delimiter=self.sep, header=None,
+                                      engine='python')
+            processed_data = origin_data
+            return processed_data

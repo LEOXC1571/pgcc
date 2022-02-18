@@ -43,34 +43,44 @@ class BaseDataset(object):
         return output_inter_file, output_item_file, output_user_file
 
     def load_inter_data(self) -> pd.DataFrame():
-        raise NotImplementedError
+        processed_data = pd.read_csv(self.inter_file, usecols=[1, 4, 6], delimiter=self.sep, header=None,
+                                     engine='python')
+
+        return processed_data
 
     def load_item_data(self) -> pd.DataFrame():
-        raise NotImplementedError
+        origin_data = pd.read_csv(self.item_file, usecols=[0, 1, 2], delimiter=self.sep, header=None,
+                                  engine='python')
+        processed_data = origin_data
+        # processed_data = origin_data.iloc[:, (0, 1)]
+        return processed_data
 
     def load_user_data(self) -> pd.DataFrame():
-        raise NotImplementedError
+        origin_data = pd.read_csv(self.user_file, usecols=[0, 1, 2], delimiter=self.sep, header=None,
+                                  engine='python')
+        processed_data = origin_data
+        return processed_data
 
     def convert_inter(self):
-        try:
+        # try:
             input_inter_data = self.load_inter_data()
             self.convert(input_inter_data, self.inter_fields, self.output_inter_file)
-        except NotImplementedError:
-            print('This dataset can\'t be converted to inter file\n')
+        # except NotImplementedError:
+        #     print('This dataset can\'t be converted to inter file\n')
 
     def convert_item(self):
-        try:
+        # try:
             input_item_data = self.load_item_data()
             self.convert(input_item_data, self.item_fields, self.output_item_file)
-        except NotImplementedError:
-            print('This dataset can\'t be converted to item file\n')
+        # except NotImplementedError:
+        #     print('This dataset can\'t be converted to item file\n')
 
     def convert_user(self):
-        try:
+        # try:
             input_user_data = self.load_user_data()
             self.convert(input_user_data, self.user_fields, self.output_user_file)
-        except NotImplementedError:
-            print('This dataset can\'t be converted to user file\n')
+        # except NotImplementedError:
+        #     print('This dataset can\'t be converted to user file\n')
 
     @staticmethod
     def convert(input_data, selected_fields, output_file):
@@ -80,8 +90,11 @@ class BaseDataset(object):
         with open(output_file, 'w') as fp:
             fp.write('\t'.join([selected_fields[column] for column in output_data.columns]) + '\n')
             for i in tqdm(range(output_data.shape[0])):
-                fp.write('\t'.join([str(output_data.iloc[i, j])
-                                    for j in range(output_data.shape[1])]) + '\n')
+                for j in range(output_data.shape[1]):
+                    try:
+                        fp.write('\t'.join([str(output_data.iloc[i, j])]) + '\n')
+                    except UnicodeEncodeError:
+                        continue
 
 
     def parse_json(self, data_path):
