@@ -6,7 +6,7 @@ import datetime as dt
 import pandas as pd
 from tqdm import tqdm
 
-from utils import init_device
+from utils.utils import init_device
 
 
 def get_day_gap_before(s):

@@ -1,0 +1,38 @@
+# tag recommend configuration
+# 2021.11.8 for test
+
+
+## Environment settings
+gpu_id: 0
+use_gpu: true
+seed: 32
+reproducibility: True
+state: INFO
+data_path: 'dataset'
+
+show_progress : True
+
+save_dataset: False
+save_dataloaders: False
+
+
+
+## Data settings
+load_col:
+  inter: [ user_id, item_id, tag_id ]
+## default
+neg_sampling:
+  uniform: 4
+
+
+
+## Evaluation settings
+eval_args:
+  split: { 'RS':[0.6,0.2,0.2]}
+  group_by: user
+  order: RO
+  mode: full
+repeatable: True
+valid_metric: Recall@10
+metrics: ["Precision", "Recall","NDCG"]
+topk: [ 3,5,7,10 ]

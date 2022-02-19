@@ -1,0 +1,43 @@
+## general arguments
+gpu_id: 1
+use_gpu: true
+seed: 2019
+reproducibility: True
+state: INFO
+data_path: 'dataset'
+# benchmark_filename:
+show_progress : True
+# config_file:
+save_dataset: False
+save_dataloaders: False
+
+## training arguments
+epochs: 300
+train_batch_size: 512
+learner: adam
+learning_rate: 0.001
+# training_neg_sample_num: 1
+# training_neg_sample_distribution: uniform
+neg_sampling:
+  uniform: 1 # train neg sample? how useful?
+eval_step: 1
+stopping_step: 10
+checkpoint_dir: saved
+clip_grad_norm: ~
+# clip_grad_norm:  {'max_norm': 5, 'norm_type': 2}
+loss_decimal_place: 4
+weight_decay: 0.0
+
+## evaluation arguments
+eval_args:
+  split: { 'RS': [ 0.6,0.2,0.2 ] }
+  group_by: user
+  order: RO
+  mode: full
+metrics: ["Recall", "precision", 'Hit', 'NDCG', 'MRR']
+topk: [10]
+valid_metric: Recall@10
+valid_metric_bigger: False
+eval_batch_size: 4096
+metric_decimal_place: 4
+repeatable: True

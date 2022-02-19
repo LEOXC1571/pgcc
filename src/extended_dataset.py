@@ -5075,16 +5075,16 @@ class ECOMMERCEDataset(BaseDataset):
         self.output_inter_file, self.output_item_file, self.output_user_file = self.get_output_files()
 
         # selected feature fields
-        self.inter_fields = {0: 'item_id: token',
-                             1: 'timestamp: float',
-                             2: 'user_id: token'
+        self.inter_fields = {0: 'user_id: token',
+                             1: 'item_id: token',
+                             2: 'timestamp: float'
                              }
         self.item_fields = {0: 'item_id: token',
                             1: 'total_order: float',
-                            2: 'total_sales'}
+                            2: 'total_sales: float'}
         self.user_fields = {0: 'user_id: token',
-                            1: 'user_total_orders',
-                            2: 'user_total_pur'}
+                            1: 'user_total_orders: float',
+                            2: 'user_total_pur: float'}
 
         def load_inter_data(self):
             # itemid_data = pd.read_csv(self.inter_file, usecols=[0, 1], delimiter=self.sep, header=None,
@@ -5096,20 +5096,20 @@ class ECOMMERCEDataset(BaseDataset):
             # processed_data = pd.merge(userid_data, itemid_data, on='InvoiceNo', how='left')
             # processed_data = pd.merge(processed_data, timestamp_data, on='InvoiceNo', how='left')
             # processed_data = processed_data.loc[:,[1,2,3]]
-            processed_data = pd.read_csv(self.inter_file, usecols=[1, 4, 6], delimiter=self.sep, header=None,
+            processed_data = pd.read_csv(self.inter_file, usecols=[1, 4, 6], delimiter=self.sep, header=0,
                                          engine='python')
 
             return processed_data
 
         def load_item_data(self):
-            origin_data = pd.read_csv(self.item_file, usecols=[0, 1, 2], delimiter=self.sep, header=None,
+            origin_data = pd.read_csv(self.item_file, usecols=[0, 1, 2], delimiter=self.sep, header=0,
                                       engine='python')
             processed_data = origin_data
             # processed_data = origin_data.iloc[:, (0, 1)]
             return processed_data
 
         def load_user_data(self):
-            origin_data = pd.read_csv(self.user_file, usecols=[0, 1, 2], delimiter=self.sep, header=None,
+            origin_data = pd.read_csv(self.user_file, usecols=[0, 1, 2], delimiter=self.sep, header=0,
                                       engine='python')
             processed_data = origin_data
             return processed_data
