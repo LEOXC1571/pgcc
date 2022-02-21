@@ -1,10 +1,10 @@
 ## dataset arguments
-# field_separator: '/t'
+# 'field_separator': '/t'
 # seq_separator: ' '
 'USER_ID_FIELD': 'user_id'
-'ITEM_ID_FIELD': 'item_id' # 'tag_id
+'ITEM_ID_FIELD': 'item_id'
 # RATING_FIELD:
-# TIME_FIELD:
+# 'TIME_FIELD': 'timestamp'
 # seq_len: 1
 
 'load_col':

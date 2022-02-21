@@ -92,9 +92,10 @@ class BaseDataset(object):
             for i in tqdm(range(output_data.shape[0])):
                 for j in range(output_data.shape[1]):
                     try:
-                        fp.write('\t'.join([str(output_data.iloc[i, j])]) + '\n')
+                        fp.write('\t'.join([str(output_data.iloc[i, j])]) + '\t')
                     except UnicodeEncodeError:
                         continue
+                fp.write('\n')
 
 
     def parse_json(self, data_path):
