@@ -43,20 +43,20 @@ class BaseDataset(object):
         return output_inter_file, output_item_file, output_user_file
 
     def load_inter_data(self) -> pd.DataFrame():
-        processed_data = pd.read_csv(self.inter_file, usecols=[1, 4, 6], delimiter=self.sep, header=None,
+        processed_data = pd.read_csv(self.inter_file, usecols=[0, 1, 2], delimiter=self.sep, header=0,
                                      engine='python')
 
         return processed_data
 
     def load_item_data(self) -> pd.DataFrame():
-        origin_data = pd.read_csv(self.item_file, usecols=[0, 1, 2], delimiter=self.sep, header=None,
+        origin_data = pd.read_csv(self.item_file, usecols=[0, 1, 2], delimiter=self.sep, header=0,
                                   engine='python')
         processed_data = origin_data
         # processed_data = origin_data.iloc[:, (0, 1)]
         return processed_data
 
     def load_user_data(self) -> pd.DataFrame():
-        origin_data = pd.read_csv(self.user_file, usecols=[0, 1, 2], delimiter=self.sep, header=None,
+        origin_data = pd.read_csv(self.user_file, usecols=[0, 1, 2], delimiter=self.sep, header=0,
                                   engine='python')
         processed_data = origin_data
         return processed_data
@@ -89,13 +89,16 @@ class BaseDataset(object):
             output_data[column] = input_data.iloc[:, column]
         with open(output_file, 'w') as fp:
             fp.write('\t'.join([selected_fields[column] for column in output_data.columns]) + '\n')
+            # for i in tqdm(range(output_data.shape[0])):
+            #     for j in range(output_data.shape[1]):
+            #         try:
+            #             fp.write('\t'.join([str(output_data.iloc[i, j])]) + '\t')
+            #         except UnicodeEncodeError:
+            #             continue
+            #     fp.write('\n')
             for i in tqdm(range(output_data.shape[0])):
-                for j in range(output_data.shape[1]):
-                    try:
-                        fp.write('\t'.join([str(output_data.iloc[i, j])]) + '\t')
-                    except UnicodeEncodeError:
-                        continue
-                fp.write('\n')
+                fp.write('\t'.join([str(output_data.iloc[i, j])
+                                    for j in range(output_data.shape[1])]) + '\n')
 
 
     def parse_json(self, data_path):

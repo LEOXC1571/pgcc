@@ -5065,7 +5065,7 @@ class ECOMMERCEDataset(BaseDataset):
         # self.duplicate_removal = duplicate_removal
 
         # input file
-        self.inter_file = os.path.join(self.input_path, 'ecommercedata_ho.csv')
+        self.inter_file = os.path.join(self.input_path, 'inter_data.csv')
         self.item_file = os.path.join(self.input_path, 'item_data.csv')
         self.user_file = os.path.join(self.input_path, 'user_data.csv')
 
@@ -5075,17 +5075,17 @@ class ECOMMERCEDataset(BaseDataset):
         self.output_inter_file, self.output_item_file, self.output_user_file = self.get_output_files()
 
         # selected feature fields
-        self.inter_fields = {0: 'user_id: token',
-                             1: 'item_id: token',
-                             2: 'timestamp: float'
+        self.inter_fields = {0: 'user_id:token',
+                             1: 'timestamp:float',
+                             2: 'item_id:token'
                              }
-        self.item_fields = {0: 'item_id: token',
-                            1: 'total_order: float',
-                            2: 'total_sales: float'
+        self.item_fields = {0: 'item_id:token',
+                            1: 'total_orders:float',
+                            2: 'total_sales:float'
                             }
-        self.user_fields = {0: 'user_id: token',
-                            1: 'user_total_orders: float',
-                            2: 'user_total_pur: float'
+        self.user_fields = {0: 'user_id:token',
+                            1: 'user_total_orders:float',
+                            2: 'user_total_pur:float'
                             }
 
         def load_inter_data(self):
@@ -5098,7 +5098,7 @@ class ECOMMERCEDataset(BaseDataset):
             # processed_data = pd.merge(userid_data, itemid_data, on='InvoiceNo', how='left')
             # processed_data = pd.merge(processed_data, timestamp_data, on='InvoiceNo', how='left')
             # processed_data = processed_data.loc[:,[1,2,3]]
-            processed_data = pd.read_csv(self.inter_file, usecols=[1, 4, 6], delimiter=self.sep, header=None,
+            processed_data = pd.read_csv(self.inter_file, usecols=[0, 1, 2], delimiter=self.sep, header=None,
                                          engine='python')
 
             return processed_data

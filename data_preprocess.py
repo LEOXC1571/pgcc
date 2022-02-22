@@ -9,7 +9,7 @@ from features import GetItemFeature, GetBertFeature, GetUserFeature
 DataPath = 'raw_datasets'
 FeaturePath = 'raw_datasets'
 
-raw_data = pd.read_csv(os.path.join(DataPath, 'ecommercedata_ho.csv'), header=0, keep_default_na=False)
+raw_data = pd.read_csv(os.path.join(DataPath, 'ecommercedata_processed.csv'), header=0, keep_default_na=False)
 # raw_data.colomns = ['invoice_no', 'stock_code', 'description', 'quantity', 'invoice_date', 'unit_price', 'customer_id',
 #                     'country']
 raw_data['InvoiceDate'] = pd.to_datetime(raw_data['InvoiceDate'])
@@ -23,13 +23,14 @@ raw_data.columns = ['InvoiceNo', 'StockCode', 'Description', 'Quantity', 'Invoic
 # day = (raw_data['InvoiceDate'][100000]-raw_data['InvoiceDate'][1]).days
 print('--------data read complete--------')
 
-item_data = GetItemFeature(raw_data)
-user_data = GetUserFeature(raw_data)
-bert_data = GetBertFeature(raw_data)
-
+# item_data = GetItemFeature(raw_data)
+# user_data = GetUserFeature(raw_data)
+# bert_data = GetBertFeature(raw_data)
+inter_data = raw_data[['StockCode', 'order_date', 'CustomerID']]
 # print(item_data)
-item_data.to_csv(os.path.join(DataPath,'item_data.csv'),index=None)
-user_data.to_csv(os.path.join(DataPath,'user_data.csv'),index=None)
-item_des_data = pd.merge(item_data,bert_data,on='StockCode',how='left')
-item_des_data.to_csv(os.path.join(DataPath,'item_des_data.csv'),index=None)
+# item_data.to_csv(os.path.join(DataPath,'item_data.csv'),index=None)
+# user_data.to_csv(os.path.join(DataPath,'user_data.csv'),index=None)
+# item_des_data = pd.merge(item_data,bert_data,on='StockCode',how='left')
+# item_des_data.to_csv(os.path.join(DataPath,'item_des_data.csv'),index=None)
+inter_data.to_csv(os.path.join(DataPath,'inter_data.csv'),index=None)
 print('----------Item data processed----------')

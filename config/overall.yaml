@@ -1,7 +1,7 @@
 ## general arguments
-gpu_id: 1
+gpu_id: 0
 use_gpu: true
-seed: 2019
+seed: 2022
 reproducibility: True
 state: INFO
 data_path: 'dataset'
@@ -12,7 +12,7 @@ save_dataset: False
 save_dataloaders: False
 
 ## training arguments
-epochs: 300
+epochs: 500
 train_batch_size: 512
 learner: adam
 learning_rate: 0.001
@@ -30,7 +30,7 @@ weight_decay: 0.0
 
 ## evaluation arguments
 eval_args:
-  split: { 'RS': [ 0.6,0.2,0.2 ] }
+  split: { 'RS': [ 0.8,0.1,0.1 ] }
   group_by: user
   order: RO
   mode: full

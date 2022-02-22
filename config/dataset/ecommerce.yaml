@@ -1,5 +1,5 @@
 ## dataset arguments
-# 'field_separator': '/t'
+# 'field_separator': ','
 # seq_separator: ' '
 'USER_ID_FIELD': 'user_id'
 'ITEM_ID_FIELD': 'item_id'
@@ -11,3 +11,6 @@
   'inter': [ 'item_id', 'timestamp', 'user_id' ]
   'item': ['item_id', 'total_order', 'total_sales']
   'user': ['user_id', 'user_total_orders', 'user_total_pur']
+#  'inter': [ 'StockCode', 'InvoiceDate', 'CustomerID' ]
+#  'item': [ 'StockCode', 'total_orders', 'total_sales' ]
+#  'user': [ 'CustomerID', 'user_total_orders', 'user_total_pur' ]
