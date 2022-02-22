@@ -43,7 +43,7 @@ def run_recbole(model=None, dataset=None, saved=False):
 
     # dataset filtering
     # dataset = create_dataset(config)
-    dataset = Dataset(config)
+    dataset = Dataset(config) # user_id:token, not user_id: token. more space here
     if config['save_dataset']:
         dataset.save()
     logger.info(dataset)
