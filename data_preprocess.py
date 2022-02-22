@@ -6,8 +6,8 @@ import datetime as dt
 import pandas as pd
 from features import GetItemFeature, GetBertFeature, GetUserFeature
 
-DataPath = 'datasets'
-FeaturePath = 'datasets'
+DataPath = 'raw_datasets'
+FeaturePath = 'raw_datasets'
 
 raw_data = pd.read_csv(os.path.join(DataPath, 'ecommercedata_ho.csv'), header=0, keep_default_na=False)
 # raw_data.colomns = ['invoice_no', 'stock_code', 'description', 'quantity', 'invoice_date', 'unit_price', 'customer_id',
