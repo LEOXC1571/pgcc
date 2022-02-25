@@ -30,7 +30,7 @@ weight_decay: 0.0
 
 ## evaluation arguments
 eval_args:
-  split: { 'RS': [ 0.8,0.1,0.1 ] }
+  split: { 'RS': [ 0.6,0.2,0.2 ] }
   group_by: user
   order: RO
   mode: full

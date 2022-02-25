@@ -100,10 +100,10 @@ def GetItemFeature(dataset):
     refund1 = refund.groupby(['StockCode'])['absquantity'].sum().reset_index()
     refund1['refund_quantity'] = 0
     refund2 = refund.groupby(['StockCode'])['Quantity'].sum().reset_index()
-    refund1['refund_quantity'] = refund1['absquantity']-refund2['Quantity']
+    refund1['refund_quantity'] = (refund1['absquantity']-refund2['Quantity']) / 2
     # refund1['real_quantity'] = 0
     # refund1['real_quantity'] = refund2['Quantity']+refund1['refund_quantity']
-    refund1['refund_ratio'] = refund1['refund_quantity']/refund1['absquantity']
+    refund1['refund_ratio'] = refund1['refund_quantity'] / (refund1['absquantity'] - refund1['refund_quantity'])
     refund3 = refund1[['StockCode', 'refund_ratio']].copy()
 
 
@@ -125,6 +125,8 @@ def GetItemFeature(dataset):
     min_gap.rename(columns={'day_gap_before': 'min_order_gap'}, inplace=True)
 
 
+    #退货率
+    # refund = dataset[['StockCode',]]
 
 
 
