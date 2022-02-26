@@ -31,7 +31,6 @@ def isrefund(pur):
         pur = 1
     return pur
 
-
 def GetItemFeature(dataset):
     item = dataset[['InvoiceNo', 'StockCode', 'Quantity', 'InvoiceDate', 'UnitPrice', 'CustomerID']].copy()
     # read item feature
@@ -245,16 +244,23 @@ def GetUserFeature(dataset):
     refund_result = refund_count[['CustomerID', 'refund_rate', 'special_var']].copy()
 
 
+    #recent_pur
+    recent_pur = dataset[['InvoiceDate', 'CustomerID']].copy()
+    rp1 = recent_pur.groupby('CustomerID').agg({'InvoiceDate': 'max'}).reset_index()
+    rp1['recent_pur_gap'] = 0
+    for i in range(rp1.shape[0]):
+        rp1['recent_pur_gap'][i] = (dataset['InvoiceDate'][389160]-rp1['InvoiceDate'][i]).days
+    rp2 = rp1[['CustomerID', 'recent_pur_gap']].copy()
+
 
 
     user_feature = pd.merge(user_id, user_total_orders, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, user_total_pur, on='CustomerID', how='left')
-    user_feature = pd.merge(user_feature, user_total_orders, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, max_pur_figure, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, min_pur_figure, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, mean_pur_figure, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, median_pur_figure, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, total_pur_figure, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, refund_result, on='CustomerID', how='left')
-
+    user_feature = pd.merge(user_feature, rp2, on='CustomerID', how='left')
     return user_feature
