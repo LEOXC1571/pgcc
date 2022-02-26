@@ -251,6 +251,11 @@ def GetUserFeature(dataset):
     for i in range(rp1.shape[0]):
         rp1['recent_pur_gap'][i] = (dataset['InvoiceDate'][389160]-rp1['InvoiceDate'][i]).days
     rp2 = rp1[['CustomerID', 'recent_pur_gap']].copy()
+    rp3 = recent_pur.groupby('CustomerID').agg({'InvoiceDate': 'min'}).reset_index()
+    rp3['pur_gap'] = 0
+    for j in range(rp3.shape[0]):
+        rp3['pur_gap'][j] = (rp1['InvoiceDate'][j] - rp3['InvoiceDate'][j]).days
+    rp4 = rp3[['CustomerID', 'pur_gap']].copy()
 
 
 
@@ -263,4 +268,5 @@ def GetUserFeature(dataset):
     user_feature = pd.merge(user_feature, total_pur_figure, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, refund_result, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, rp2, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, rp4, on='CustomerID', how='left')
     return user_feature
