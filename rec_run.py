@@ -15,7 +15,6 @@ from recbole.data import data_preparation, save_split_dataloaders
 from recbole.model.general_recommender import LightGCN, BPR
 from recbole.utils import init_logger, get_trainer, init_seed, set_color
 from recbole.data.dataset import Dataset
-
 import statics
 from datas.dataset import TagBasedDataset
 
