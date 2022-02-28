@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-# @FileName  :convert_run.py
+# @FileName  :run.py
 # @Time      :2021/11/8 下午7:56
 # @Author    :Miracleyin
 # @Mail      :miracleyin@live.com
@@ -12,10 +12,10 @@ import logging
 from logging import getLogger
 
 from recbole.config import Config
-from recbole.data import data_preparation, save_split_dataloaders
+from recbole.data import create_dataset, data_preparation, save_split_dataloaders
 from recbole.model.general_recommender import LightGCN, BPR
 from recbole.utils import init_logger, get_trainer, init_seed, set_color
-from recbole.data.dataset import Dataset
+
 import statics
 from datas.dataset import TagBasedDataset
 
@@ -28,7 +28,7 @@ def objective_run(config_dict=None, config_file_list=None, saved=True):
     config = Config(model=model_class, dataset=dataset, config_dict=config_dict, config_file_list=config_file_list)
     init_seed(config['seed'], config['reproducibility'])
     logging.basicConfig(level=logging.ERROR)
-    dataset = Dataset(config)
+    dataset = TagBasedDataset(config)
     train_data, valid_data, test_data = data_preparation(config, dataset)
     model = model_class(config, train_data.dataset).to(config['device']) # why train_data.dataset?
     trainer = get_trainer(config['MODEL_TYPE'], config['model'])(config, model)
@@ -42,7 +42,8 @@ def objective_run(config_dict=None, config_file_list=None, saved=True):
         'test_result': test_result
     }
 
-def run_recbole(model=None, dataset=None, saved=False):
+
+def run(model=None, dataset=None, saved=False):
     current_path = os.path.dirname(os.path.realpath(__file__))
     # base config file
     overall_init_file = os.path.join(current_path, 'config/overall.yaml')
@@ -64,19 +65,19 @@ def run_recbole(model=None, dataset=None, saved=False):
     logger.info(config)
 
     # dataset filtering
-    # dataset = create_dataset(config)
-    dataset = Dataset(config) # user_id:token, not user_id: token. more space here
+    dataset = create_dataset(config)
+    # dataset = TagBasedDataset(config)
     if config['save_dataset']:
         dataset.save()
     logger.info(dataset)
 
     # dataset splitting
-    train_data, valid_data, test_data = data_preparation(config, dataset)
+    train_data, valid_data, test_data = data_preparation(config, dataset) # train just using part edge
     if config['save_dataloaders']:
         save_split_dataloaders(config, dataloaders=(train_data, valid_data, test_data))
 
     # model loading and initialization
-    model = model_class(config, train_data.dataset).to(config['device'])
+    model = model_class(config, train_data.dataset).to(config['device']) # get model
     # model = BPR(config, train_data.dataset).to(config['device'])
 
     logger.info(model)
@@ -107,11 +108,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, action='store', help="model name")
     parser.add_argument("--dataset", type=str, action='store', help="dataset name")
-    parser.add_argument("--save", action='store_true', help="saved model path", default=False)
     args, unknown = parser.parse_known_args()
 
     model_name = args.model
     dataset_name = args.dataset
-    save_flag = args.save
 
-    run_recbole(model_name, dataset_name, save_flag)
+    run(model_name, dataset_name)

@@ -4,7 +4,7 @@
 'USER_ID_FIELD': 'user_id'
 'ITEM_ID_FIELD': 'item_id'
 # RATING_FIELD:
-# 'TIME_FIELD': 'timestamp'
+'TIME_FIELD': 'timestamp'
 # seq_len: 1
 
 'load_col':

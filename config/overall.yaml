@@ -15,7 +15,7 @@ save_dataloaders: False
 epochs: 500
 train_batch_size: 512
 learner: adam
-learning_rate: 0.001
+learning_rate: 0.0005
 # training_neg_sample_num: 1
 # training_neg_sample_distribution: uniform
 neg_sampling:
@@ -32,11 +32,11 @@ weight_decay: 0.0
 eval_args:
   split: { 'RS': [ 0.6,0.2,0.2 ] }
   group_by: user
-  order: RO
+  order: TO
   mode: full
 metrics: ["Recall", "precision", 'Hit', 'NDCG', 'MRR']
-topk: [10]
-valid_metric: Recall@10
+topk: [20]
+valid_metric: Recall@20
 valid_metric_bigger: False
 eval_batch_size: 4096
 metric_decimal_place: 4

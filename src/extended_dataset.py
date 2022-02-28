@@ -5098,20 +5098,20 @@ class ECOMMERCEDataset(BaseDataset):
             # processed_data = pd.merge(userid_data, itemid_data, on='InvoiceNo', how='left')
             # processed_data = pd.merge(processed_data, timestamp_data, on='InvoiceNo', how='left')
             # processed_data = processed_data.loc[:,[1,2,3]]
-            processed_data = pd.read_csv(self.inter_file, usecols=[0, 1, 2], delimiter=self.sep, header=None,
+            processed_data = pd.read_csv(self.inter_file, usecols=[0, 1, 2], delimiter=self.sep, header=0,
                                          engine='python')
 
             return processed_data
 
         def load_item_data(self):
-            origin_data = pd.read_csv(self.item_file, usecols=[0, 1, 2], delimiter=self.sep, header=None,
+            origin_data = pd.read_csv(self.item_file, usecols=[0, 1, 2], delimiter=self.sep, header=0,
                                       engine='python')
             processed_data = origin_data
             # processed_data = origin_data.iloc[:, (0, 1)]
             return processed_data
 
         def load_user_data(self):
-            origin_data = pd.read_csv(self.user_file, usecols=[0, 1, 2], delimiter=self.sep, header=None,
+            origin_data = pd.read_csv(self.user_file, usecols=[0, 1, 2], delimiter=self.sep, header=0,
                                       engine='python')
             processed_data = origin_data
             return processed_data
