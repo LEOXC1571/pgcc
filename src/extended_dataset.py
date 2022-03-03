@@ -5067,7 +5067,7 @@ class ECOMMERCEDataset(BaseDataset):
         # input file
         self.inter_file = os.path.join(self.input_path, 'inter_data.csv')
         self.item_file = os.path.join(self.input_path, 'feat_pca3.csv')
-        self.user_file = os.path.join(self.input_path, 'user_data.csv')
+        self.user_file = os.path.join(self.input_path, 'user_feat.csv')
 
         self.sep = ','
 
@@ -5080,12 +5080,14 @@ class ECOMMERCEDataset(BaseDataset):
                              2: 'item_id:token'
                              }
         self.item_fields = {0: 'item_id:token',
-                            1: 'total_orders:float',
-                            2: 'total_sales:float'
+                            1: 'pca1:float',
+                            2: 'pca2:float',
+                            3: 'pca3:float'
                             }
         self.user_fields = {0: 'user_id:token',
-                            1: 'user_total_orders:float',
-                            2: 'user_total_pur:float'
+                            1: 'R:float',
+                            2: 'F:float',
+                            3: 'M:float'
                             }
 
         def load_inter_data(self):

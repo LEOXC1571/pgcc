@@ -49,14 +49,14 @@ class BaseDataset(object):
         return processed_data
 
     def load_item_data(self) -> pd.DataFrame():
-        origin_data = pd.read_csv(self.item_file, usecols=[0, 1, 2], delimiter=self.sep, header=0,
+        origin_data = pd.read_csv(self.item_file, usecols=[0, 1, 2, 3], delimiter=self.sep, header=0,
                                   engine='python')
         processed_data = origin_data
         # processed_data = origin_data.iloc[:, (0, 1)]
         return processed_data
 
     def load_user_data(self) -> pd.DataFrame():
-        origin_data = pd.read_csv(self.user_file, usecols=[0, 1, 2], delimiter=self.sep, header=0,
+        origin_data = pd.read_csv(self.user_file, usecols=[0, 1, 2, 3], delimiter=self.sep, header=0,
                                   engine='python')
         processed_data = origin_data
         return processed_data
