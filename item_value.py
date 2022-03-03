@@ -86,7 +86,11 @@ plt.show()
 #PCA选择降维保留3个主要成分
 pca=PCA(n_components=3)
 features3=pca.fit_transform(features1)
-pd.DataFrame(features3).to_csv(os.path.join(current_path, 'outputs/tables/feat_pca3.csv'),index=None)
+pca_feat = pd.concat([item_feature_data, pd.DataFrame(features3)], ignore_index=False, axis=1)
+pca_feat.rename(columns={0: 'pca1'}, inplace=True)
+pca_feat.rename(columns={1: 'pca2'}, inplace=True)
+pca_feat.rename(columns={2: 'pca3'}, inplace=True)
+pca_feat[['StockCode', 'pca1', 'pca2', 'pca3']].to_csv(os.path.join(current_path, 'outputs/tables/feat_pca3.csv'),index=None)
 #降维后的累计各成分方差占比和（即解释PC携带的信息多少）
 print(sum(pca.explained_variance_ratio_))
 factor_load = pca.components_.T * np.sqrt(pca.explained_variance_)

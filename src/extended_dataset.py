@@ -5066,7 +5066,7 @@ class ECOMMERCEDataset(BaseDataset):
 
         # input file
         self.inter_file = os.path.join(self.input_path, 'inter_data.csv')
-        self.item_file = os.path.join(self.input_path, 'item_data.csv')
+        self.item_file = os.path.join(self.input_path, 'feat_pca3.csv')
         self.user_file = os.path.join(self.input_path, 'user_data.csv')
 
         self.sep = ','
