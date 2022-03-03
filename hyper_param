@@ -1,0 +1,38 @@
+BPR:
+best params:  {'learning_rate': 0.001, 'reg_weight': 0.001}
+
+best result: 
+{'best_valid_score': 0.1319, 'valid_score_bigger': True, 
+
+'best_valid_result': {'recall@20': 0.1319, 'precision@20': 0.0976, 'hit@20': 0.6547, 'ndcg@20': 0.1601, 'mrr@20': 0.3454}, 
+
+'test_result': {'recall@20': 0.1294, 'precision@20': 0.0868, 'hit@20': 0.6401, 'ndcg@20': 0.1528, 'mrr@20': 0.3362}}
+
+best params:  {'learning_rate': 0.001, 'reg_weight': 0.0001, 'seed': 2021}
+
+best result: 
+{'best_valid_score': 0.1282, 'valid_score_bigger': True, 
+
+'best_valid_result': {'recall@20': 0.1282, 'precision@20': 0.097, 'hit@20': 0.6523, 'ndcg@20': 0.1602, 'mrr@20': 0.3533}, 
+
+'test_result': {'recall@20': 0.1264, 'precision@20': 0.0868, 'hit@20': 0.6335, 'ndcg@20': 0.1529, 'mrr@20': 0.3499}}
+
+
+best params:  {'learning_rate': 0.001, 'reg_weight': 0.0001, 'seed': 2020}
+
+best result: 
+{'best_valid_score': 0.1322, 'valid_score_bigger': True, '
+
+best_valid_result': {'recall@20': 0.1322, 'precision@20': 0.0964, 'hit@20': 0.6565, 'ndcg@20': 0.1595, 'mrr@20': 0.3498},
+
+'test_result': {'recall@20': 0.1275, 'precision@20': 0.0864, 'hit@20': 0.6301, 'ndcg@20': 0.1509, 'mrr@20': 0.339}}
+
+
+best params:  {'learning_rate': 0.001, 'reg_weight': 0.01, 'seed': 2019}
+
+best result: 
+{'best_valid_score': 0.1339, 'valid_score_bigger': True, 
+
+'best_valid_result': {'recall@20': 0.1339, 'precision@20': 0.0941, 'hit@20': 0.6601, 'ndcg@20': 0.1548, 'mrr@20': 0.33},
+
+'test_result': {'recall@20': 0.1243, 'precision@20': 0.0832, 'hit@20': 0.6324, 'ndcg@20': 0.145, 'mrr@20': 0.3234}}

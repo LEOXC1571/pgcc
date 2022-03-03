@@ -61,7 +61,7 @@ feature['StockCode']=stockcode
 features1=preprocessing.MinMaxScaler().fit_transform(feature[feature_col])
 features1=pd.DataFrame(features1)
 features1.head()
-
+features1.to_csv(os.path.join(current_path, 'outputs/tables/feat_minmaxscaler.csv'),index=None)
 #对数据集进行PCA降维（信息保留为99.99%）
 pca=PCA(n_components=0.9999)  #保证降维后的数据保持90%的信息，则填0.9
 features2=pca.fit_transform(features1)
@@ -86,7 +86,7 @@ plt.show()
 #PCA选择降维保留3个主要成分
 pca=PCA(n_components=3)
 features3=pca.fit_transform(features1)
-
+pd.DataFrame(features3).to_csv(os.path.join(current_path, 'outputs/tables/feat_pca3.csv'),index=None)
 #降维后的累计各成分方差占比和（即解释PC携带的信息多少）
 print(sum(pca.explained_variance_ratio_))
 factor_load = pca.components_.T * np.sqrt(pca.explained_variance_)
@@ -113,8 +113,8 @@ lab = lab.T
 lab_result = pd.DataFrame(lab)
 item_feature_data = pd.concat([item_feature_data, lab_result], ignore_index=False, axis=1)
 item_feature_data.rename(columns={0: 'kmeans_pre'}, inplace=True)
-item_feature_data.to_csv(os.path.join(current_path, 'outputs/tables/kmeans_pre.csv'),index=None)
-
+# item_feature_data.to_csv(os.path.join(current_path, 'outputs/tables/kmeans_pre.csv'),index=None)
+item_feature_data[['StockCode', 'kmeans_pre']].to_csv(os.path.join(current_path, 'outputs/tables/kmeans_pre.csv'),index=None)
 #绘制聚类结果2维的散点图
 plt.figure(figsize=(8, 8))
 plt.scatter(features3[:, 0], features3[:, 1], c=lab, cmap='plasma')
