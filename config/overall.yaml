@@ -35,9 +35,9 @@ eval_args:
   order: TO
   mode: full
 metrics: ["Recall", "precision", 'Hit', 'NDCG', 'MRR']
-topk: [20]
+topk: [10, 20]
 valid_metric: Recall@20
 valid_metric_bigger: False
-eval_batch_size: 4096
+eval_batch_size: 111111111
 metric_decimal_place: 4
 repeatable: True

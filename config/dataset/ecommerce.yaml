@@ -9,8 +9,8 @@
 
 'load_col':
   'inter': [ 'item_id', 'timestamp', 'user_id' ]
-#  'item': ['item_id', 'total_order', 'total_sales']
-#  'user': ['user_id', 'user_total_orders', 'user_total_pur']
+  'item': [ 'item_id', 'total_order', 'total_sales' ]
+  'user': [ 'user_id', 'Country','uv0', 'uv1', 'uv2', 'uv3', 'uv4', 'uv5','uv6', 'uv7', 'uv8', 'uv9', 'uv10','uv11','uv12','uv13','uv14' ]
 #  'inter': [ 'StockCode', 'InvoiceDate', 'CustomerID' ]
 #  'item': [ 'StockCode', 'total_orders', 'total_sales' ]
 #  'user': [ 'CustomerID', 'user_total_orders', 'user_total_pur' ]
