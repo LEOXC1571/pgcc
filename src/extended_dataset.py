@@ -5066,7 +5066,7 @@ class ECOMMERCEDataset(BaseDataset):
 
         # input file
         self.inter_file = os.path.join(self.input_path, 'inter_data.csv')
-        self.item_file = os.path.join(self.input_path, 'feat_pca3.csv')
+        self.item_file = os.path.join(self.input_path, 'item_feat.csv')
         self.user_file = os.path.join(self.input_path, 'user_feat.csv')
 
         self.sep = ','
@@ -5080,14 +5080,40 @@ class ECOMMERCEDataset(BaseDataset):
                              2: 'item_id:token'
                              }
         self.item_fields = {0: 'item_id:token',
-                            1: 'pca1:float',
-                            2: 'pca2:float',
-                            3: 'pca3:float'
+                            1: 'iv0:float',
+                            2: 'iv1:float',
+                            3: 'iv2:float',
+                            4: 'iv3:float',
+                            5: 'iv4:float',
+                            6: 'iv5:float',
+                            7: 'iv6:float',
+                            8: 'iv7:float',
+                            9: 'iv8:float',
+                            10: 'iv9:float',
+                            11: 'iv10:float',
+                            12: 'iv11:float',
+                            13: 'iv12:float',
+                            14: 'iv13:float',
+                            15: 'iv14:float',
+                            16: 'iv15:float'
                             }
         self.user_fields = {0: 'user_id:token',
-                            1: 'R:float',
-                            2: 'F:float',
-                            3: 'M:float'
+                            1: 'Country:token',
+                            2: 'uv0:float',
+                            3: 'uv1:float',
+                            4: 'uv2:float',
+                            5: 'uv3:float',
+                            6: 'uv4:float',
+                            7: 'uv5:float',
+                            8: 'uv6:float',
+                            9: 'uv7:float',
+                            10: 'uv8:float',
+                            11: 'uv9:float',
+                            12: 'uv10:float',
+                            13: 'uv11:float',
+                            14: 'uv12:float',
+                            15: 'uv13:float',
+                            16: 'uv14:float'
                             }
 
         def load_inter_data(self):

@@ -5,7 +5,7 @@ import datetime as dt
 
 import pandas as pd
 from tqdm import tqdm
-
+from sklearn.preprocessing import LabelEncoder
 from utils.utils import init_device
 
 
@@ -29,6 +29,13 @@ def isrefund(pur):
         pur = 0
     elif pur < 0:
         pur = 1
+    return pur
+
+def isnotrefund(pur):
+    if pur >= 0:
+        pur = 1
+    elif pur < 0:
+        pur = 0
     return pur
 
 def GetItemFeature(dataset):
@@ -181,7 +188,7 @@ def GetBertFeature(dataset: pd.DataFrame)->pd.DataFrame:
 
 
 def GetUserFeature(dataset):
-    user = dataset[['InvoiceNo', 'StockCode', 'Quantity', 'InvoiceDate', 'UnitPrice', 'CustomerID']].copy()
+    user = dataset[['InvoiceNo', 'StockCode', 'Quantity', 'InvoiceDate', 'UnitPrice', 'CustomerID', 'Country']].copy()
     # read item feature
     user_id = user[['CustomerID']].copy()
     user_id.drop_duplicates(inplace=True)
@@ -234,15 +241,16 @@ def GetUserFeature(dataset):
     refund_count['v2'] = 0
     refund_count['v2'] = refund_count['total_order'] - (2 * refund_count['refund_count'])
     #
-    # refund_figure = refund.groupby('CustomerID').agg({'refund_figure': 'sum'}).reset_index()
+    refund_figure = refund.groupby('CustomerID').agg({'refund_figure': 'sum'}).reset_index()
     refund_count = pd.merge(refund_count, total_pur_figure, on='CustomerID', how='left')
-    # refund_figure['v1'] = 0
-    # refund_figure['v1'] = refund_figure['total_pur_figure']-refund_figure['refund_figure']
+    refund_figure['v1'] = 0
+    refund_figure['v1'] = refund_figure['refund_figure']/refund_count['total_pur_figure']
+    refund_figure.rename(columns={'v1': 'refund_figure_rate'}, inplace=True)
     # refund_count = pd.merge(refund_count, refund_figure, on='CustomerID', how='left')
     refund_count['special_var'] = 0
     refund_count['special_var'] = refund_count['total_pur_figure']/refund_count['v2']
     refund_result = refund_count[['CustomerID', 'refund_rate', 'special_var']].copy()
-
+    refund_figure_rate = refund_figure[['CustomerID', 'refund_figure_rate']].copy()
 
     #recent_pur
     recent_pur = dataset[['InvoiceDate', 'CustomerID']].copy()
@@ -257,6 +265,27 @@ def GetUserFeature(dataset):
         rp3['pur_gap'][j] = (rp1['InvoiceDate'][j] - rp3['InvoiceDate'][j]).days
     rp4 = rp3[['CustomerID', 'pur_gap']].copy()
 
+    #Country
+    user_c = user[['CustomerID', 'Country']].copy()
+    cus_c=LabelEncoder().fit_transform(user_c['Country'])
+    user_c['Country'] = cus_c
+    user_c.drop_duplicates(inplace=True)
+
+    #pur type 购买种类
+    pt = user[['StockCode','Quantity', 'CustomerID']].copy()
+    pt.drop_duplicates(subset=['StockCode', 'CustomerID'], inplace=True)
+    pt['is_not_refund'] = 0
+    pt['is_not_refund'] = pt.Quantity.apply(isnotrefund)
+    pt1 = pt.groupby('CustomerID').agg({'is_not_refund': 'sum'}).reset_index()
+    pt1.rename(columns={'is_not_refund': 'pur_type'}, inplace=True)
+
+    #每单下单数量
+    pur = user[['InvoiceNo', 'StockCode', 'Quantity', 'CustomerID']].copy()
+    pur1 = pur.groupby(['InvoiceNo', 'CustomerID']).agg({'Quantity': 'sum'}).reset_index()
+    pur2 = pur1.groupby('CustomerID').agg({'Quantity': 'mean'}).reset_index()
+    pur2.rename(columns={'Quantity': 'mean_pur'}, inplace=True)
+    pur3 = pur1.groupby('CustomerID').agg({'Quantity': 'max'}).reset_index()
+    pur3.rename(columns={'Quantity': 'max_pur'}, inplace=True)
 
 
     user_feature = pd.merge(user_id, user_total_orders, on='CustomerID', how='left')
@@ -267,6 +296,11 @@ def GetUserFeature(dataset):
     user_feature = pd.merge(user_feature, median_pur_figure, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, total_pur_figure, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, refund_result, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, refund_figure_rate, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, rp2, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, rp4, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, pur2, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, pur3, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, pt1, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, user_c, on='CustomerID', how='left')
     return user_feature
