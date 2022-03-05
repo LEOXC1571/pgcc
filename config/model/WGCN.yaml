@@ -1,0 +1,6 @@
+lr_embedding_size: 20
+gcn_embedding_size: 64
+n_layers: 2
+reg_weight: 1e-05
+mlp_hidden_size: [32, 16, 8]
+dropout_prob: 0.1

@@ -7,6 +7,7 @@
 'TIME_FIELD': 'timestamp'
 # seq_len: 1
 
+'filter_inter_by_user_or_item': False # if True, inter_feat will filter by user_feat and item_feat
 'load_col':
   'inter': [ 'item_id', 'timestamp', 'user_id' ]
   'item': [ 'item_id', 'iv0', 'iv1', 'iv2', 'iv3', 'iv4', 'iv5', 'iv6', 'iv7', 'iv8', 'iv9', 'iv10',  'iv11', 'iv12', 'iv13', 'iv14', 'iv15', ]

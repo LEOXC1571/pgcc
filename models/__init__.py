@@ -11,3 +11,4 @@ from .cfa import CFautoencoder
 from .dspr import DeepSimPersionalRec
 from .lightgcn import LightGCN
 from .ngcf import NGCF
+from .widegcn import WideGCN

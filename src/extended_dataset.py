@@ -5079,23 +5079,44 @@ class ECOMMERCEDataset(BaseDataset):
                              1: 'timestamp:float',
                              2: 'item_id:token'
                              }
+        # self.item_fields = {0: 'item_id:token',
+        #                     1: 'iv0:float',
+        #                     2: 'iv1:float',
+        #                     3: 'iv2:float',
+        #                     4: 'iv3:float',
+        #                     5: 'iv4:float',
+        #                     6: 'iv5:float',
+        #                     7: 'iv6:float',
+        #                     8: 'iv7:float',
+        #                     9: 'iv8:float',
+        #                     10: 'iv9:float',
+        #                     11: 'iv10:float',
+        #                     12: 'iv11:float',
+        #                     13: 'iv12:float',
+        #                     14: 'iv13:float',
+        #                     15: 'iv14:float',
+        #                     16: 'iv15:float'
+        #                     }
+        # self.user_fields = {0: 'user_id:token',
+        #                     1: 'Country:token',
+        #                     2: 'uv0:float',
+        #                     3: 'uv1:float',
+        #                     4: 'uv2:float',
+        #                     5: 'uv3:float',
+        #                     6: 'uv4:float',
+        #                     7: 'uv5:float',
+        #                     8: 'uv6:float',
+        #                     9: 'uv7:float',
+        #                     10: 'uv8:float',
+        #                     11: 'uv9:float',
+        #                     12: 'uv10:float',
+        #                     13: 'uv11:float',
+        #                     14: 'uv12:float',
+        #                     15: 'uv13:float',
+        #                     16: 'uv14:float'
+        #                     }
         self.item_fields = {0: 'item_id:token',
-                            1: 'iv0:float',
-                            2: 'iv1:float',
-                            3: 'iv2:float',
-                            4: 'iv3:float',
-                            5: 'iv4:float',
-                            6: 'iv5:float',
-                            7: 'iv6:float',
-                            8: 'iv7:float',
-                            9: 'iv8:float',
-                            10: 'iv9:float',
-                            11: 'iv10:float',
-                            12: 'iv11:float',
-                            13: 'iv12:float',
-                            14: 'iv13:float',
-                            15: 'iv14:float',
-                            16: 'iv15:float'
+                            1: 'iv:float',
                             }
         # self.user_fields = {0: 'user_id:token',
         #                     1: 'Country:token',
@@ -5115,9 +5136,8 @@ class ECOMMERCEDataset(BaseDataset):
         #                     15: 'uv13:float',
         #                     16: 'uv14:float'
         #                     }
-        self.user_fields = {0: 'user_id:token',
-                            1: 'uv:float_seq'
-                            }
+
+                         
 
         def load_inter_data(self):
             # itemid_data = pd.read_csv(self.inter_file, usecols=[0, 1], delimiter=self.sep, header=None,
