@@ -61,7 +61,7 @@ feature['StockCode']=stockcode
 features1=preprocessing.MinMaxScaler().fit_transform(feature[feature_col])
 features1=pd.DataFrame(features1)
 features1.head()
-features1.to_csv(os.path.join(current_path, 'outputs/tables/feat_minmaxscaler.csv'),index=None)
+# features1.to_csv(os.path.join(current_path, 'outputs/tables/feat_minmaxscaler.csv'),index=None)
 #对数据集进行PCA降维（信息保留为99.99%）
 pca=PCA(n_components=0.9999)  #保证降维后的数据保持90%的信息，则填0.9
 features2=pca.fit_transform(features1)
@@ -95,7 +95,7 @@ pca_feat[['StockCode', 'pca1', 'pca2', 'pca3']].to_csv(os.path.join(current_path
 print(sum(pca.explained_variance_ratio_))
 factor_load = pca.components_.T * np.sqrt(pca.explained_variance_)
 factor_load = pd.DataFrame(factor_load)
-factor_load.to_csv(os.path.join(current_path, 'outputs/tables/factor_load.csv'),index=None)
+# factor_load.to_csv(os.path.join(current_path, 'outputs/tables/factor_load.csv'),index=None)
 ##肘方法看k值，簇内离差平方和
 # 对每一个k值进行聚类并且记下对于的SSE，然后画出k和SSE的关系图
 sse = []
@@ -118,7 +118,7 @@ lab_result = pd.DataFrame(lab)
 item_feature_data = pd.concat([item_feature_data, lab_result], ignore_index=False, axis=1)
 item_feature_data.rename(columns={0: 'kmeans_pre'}, inplace=True)
 # item_feature_data.to_csv(os.path.join(current_path, 'outputs/tables/kmeans_pre.csv'),index=None)
-item_feature_data[['StockCode', 'kmeans_pre']].to_csv(os.path.join(current_path, 'outputs/tables/kmeans_pre.csv'),index=None)
+# item_feature_data[['StockCode', 'kmeans_pre']].to_csv(os.path.join(current_path, 'outputs/tables/kmeans_pre.csv'),index=None)
 #绘制聚类结果2维的散点图
 plt.figure(figsize=(8, 8))
 plt.scatter(features3[:, 0], features3[:, 1], c=lab, cmap='plasma')
@@ -196,8 +196,8 @@ plt.show()
 
 mean_clus_feat = item_feature_data.groupby('kmeans_pre').agg('mean').reset_index()
 median_clus_feat = item_feature_data.groupby('kmeans_pre').agg('median').reset_index()
-mean_clus_feat.to_csv(os.path.join(current_path, 'outputs/tables/mean_clus_feat.csv'), index=None)
-median_clus_feat.to_csv(os.path.join(current_path, 'outputs/tables/median_clus_feat.csv'), index=None)
+# mean_clus_feat.to_csv(os.path.join(current_path, 'outputs/tables/mean_clus_feat.csv'), index=None)
+# median_clus_feat.to_csv(os.path.join(current_path, 'outputs/tables/median_clus_feat.csv'), index=None)
 
 # 设置半径为10，最小样本量为2，建模
 dbs_feat = features3.copy()
@@ -236,29 +236,31 @@ plt.show()
 # mean_dbs_feat = item_feature_data.groupby('dbs_res').agg('mean').reset_index()
 # median_dbs_feat = item_feature_data.groupby('dbs_res').agg('median').reset_index()
 # print(1)
-for iii in range(3):
-    df0_1 = pd.read_csv(os.path.join(current_path, 'outputs/tables/kmeans_pre.csv'), header=0)
-    df0_1 = df0_1.loc[df0_1['kmeans_pre'] == iii]
-    df0_1 = df0_1.drop(['StockCode', 'kmeans_pre'],axis=1)
-    #查看集群0的车型所有特征分布
-    fig=plt.figure(figsize=(8,8))
-    plt.autoscale(enable=True)
-    i=1
-    for c in df0_1.columns:
-        ax=fig.add_subplot(4,4,i)
-        if df0_1[c].dtypes=='int' or df0_1[c].dtypes=='float':
-            sns.histplot(df0_1[c],ax=ax)
-            plt.autoscale(enable=True)
-            plt.xticks([])
-            plt.yticks([])
-        else:
-            sns.scatterplot(x=df0_1[c].value_counts().index,y=df0_1[c].value_counts(),ax=ax)
-            plt.autoscale(enable=True)
-            plt.xticks([])
-            plt.yticks([])
-        i=i+1
-        plt.xlabel('')
-        plt.title(c)
-    plt.subplots_adjust(top=0.7)
-    plt.savefig(os.path.join(current_path, f'outputs/pics/'+ str(iii) +'.png'))
-    plt.show()
+
+
+# for iii in range(3):
+#     df0_1 = pd.read_csv(os.path.join(current_path, 'outputs/tables/kmeans_pre.csv'), header=0)
+#     df0_1 = df0_1.loc[df0_1['kmeans_pre'] == iii]
+#     df0_1 = df0_1.drop(['StockCode', 'kmeans_pre'],axis=1)
+#     #查看集群0的车型所有特征分布
+#     fig=plt.figure(figsize=(8,8))
+#     plt.autoscale(enable=True)
+#     i=1
+#     for c in df0_1.columns:
+#         ax=fig.add_subplot(4,4,i)
+#         if df0_1[c].dtypes=='int' or df0_1[c].dtypes=='float':
+#             sns.histplot(df0_1[c],ax=ax)
+#             plt.autoscale(enable=True)
+#             plt.xticks([])
+#             plt.yticks([])
+#         else:
+#             sns.scatterplot(x=df0_1[c].value_counts().index,y=df0_1[c].value_counts(),ax=ax)
+#             plt.autoscale(enable=True)
+#             plt.xticks([])
+#             plt.yticks([])
+#         i=i+1
+#         plt.xlabel('')
+#         plt.title(c)
+#     plt.subplots_adjust(top=0.7)
+#     plt.savefig(os.path.join(current_path, f'outputs/pics/'+ str(iii) +'.png'))
+#     plt.show()

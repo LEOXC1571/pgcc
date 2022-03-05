@@ -286,6 +286,8 @@ def GetUserFeature(dataset):
     pur2.rename(columns={'Quantity': 'mean_pur'}, inplace=True)
     pur3 = pur1.groupby('CustomerID').agg({'Quantity': 'max'}).reset_index()
     pur3.rename(columns={'Quantity': 'max_pur'}, inplace=True)
+    pur4 = pur1.groupby('CustomerID').agg({'Quantity': 'min'}).reset_index()
+    pur4.rename(columns={'Quantity': 'min_pur'}, inplace=True)
 
 
     user_feature = pd.merge(user_id, user_total_orders, on='CustomerID', how='left')
@@ -301,6 +303,6 @@ def GetUserFeature(dataset):
     user_feature = pd.merge(user_feature, rp4, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, pur2, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, pur3, on='CustomerID', how='left')
+    user_feature = pd.merge(user_feature, pur4, on='CustomerID', how='left')
     user_feature = pd.merge(user_feature, pt1, on='CustomerID', how='left')
-    user_feature = pd.merge(user_feature, user_c, on='CustomerID', how='left')
     return user_feature
