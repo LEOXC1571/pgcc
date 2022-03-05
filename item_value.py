@@ -110,7 +110,7 @@ plt.ylabel('distortions')
 plt.title("The Elbow Method")
 plt.show()
 # 进行K-Means聚类分析
-kmeans = KMeans(n_clusters=4, init='k-means++', n_init=10, max_iter=300, random_state=0)
+kmeans = KMeans(n_clusters=5, init='k-means++', n_init=10, max_iter=300, random_state=0)
 kmeans.fit(features3)
 lab = kmeans.predict(features3)
 lab = lab.T
@@ -118,7 +118,7 @@ lab_result = pd.DataFrame(lab)
 item_feature_data = pd.concat([item_feature_data, lab_result], ignore_index=False, axis=1)
 item_feature_data.rename(columns={0: 'kmeans_pre'}, inplace=True)
 # item_feature_data.to_csv(os.path.join(current_path, 'outputs/tables/kmeans_pre.csv'),index=None)
-# item_feature_data[['StockCode', 'kmeans_pre']].to_csv(os.path.join(current_path, 'outputs/tables/kmeans_pre.csv'),index=None)
+item_feature_data[['StockCode', 'kmeans_pre']].to_csv(os.path.join(current_path, 'outputs/tables/kmeans_pre.csv'),index=None)
 #绘制聚类结果2维的散点图
 plt.figure(figsize=(8, 8))
 plt.scatter(features3[:, 0], features3[:, 1], c=lab, cmap='plasma')
@@ -196,8 +196,8 @@ plt.show()
 
 mean_clus_feat = item_feature_data.groupby('kmeans_pre').agg('mean').reset_index()
 median_clus_feat = item_feature_data.groupby('kmeans_pre').agg('median').reset_index()
-# mean_clus_feat.to_csv(os.path.join(current_path, 'outputs/tables/mean_clus_feat.csv'), index=None)
-# median_clus_feat.to_csv(os.path.join(current_path, 'outputs/tables/median_clus_feat.csv'), index=None)
+mean_clus_feat.to_csv(os.path.join(current_path, 'outputs/tables/mean_clus_feat.csv'), index=None)
+median_clus_feat.to_csv(os.path.join(current_path, 'outputs/tables/median_clus_feat.csv'), index=None)
 
 # 设置半径为10，最小样本量为2，建模
 dbs_feat = features3.copy()
