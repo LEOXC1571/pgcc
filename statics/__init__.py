@@ -23,7 +23,8 @@ model_name_map = {
     'CFA': CFautoencoder,
     'DSPR': DeepSimPersionalRec,
     'LGCN' : LightGCN,
-    'NGCF': NGCF
+    'NGCF': NGCF,
+    'WGCN': WideGCN
 }
 
 trainers = {
