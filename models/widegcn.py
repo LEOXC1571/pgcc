@@ -188,7 +188,7 @@ class WideGCN(GeneralRecommender):
             float_fields = torch.cat(float_fields, dim=1)  # [batch_size, num_float_field]
         float_fields_embedding = self.embed_float_fields(float_fields)
 
-        token_fields = []
+        token_fields = [] # may be concat lgn?
         for field_name in self.token_field_names:
             token_fields.append(interaction[field_name].unsqueeze(1))
         if len(token_fields) > 0:
@@ -197,6 +197,13 @@ class WideGCN(GeneralRecommender):
             token_fields = None
         # [batch_size, num_token_field, embed_dim] or None
         token_fields_embedding = self.embed_token_fields(token_fields)
+
+        sparse_embedding = token_fields_embedding
+        dense_embedding = float_fields_embedding
+
+        # sparse_embedding shape: [batch_size, num_token_seq_field+num_token_field, embed_dim] or None
+        # dense_embedding shape: [batch_size, num_float_field] or [batch_size, num_float_field, embed_dim] or None
+        return sparse_embedding, dense_embedding
 
     def embed_float_fields(self, float_fields, embed=True):
         """Embed the float feature columns
