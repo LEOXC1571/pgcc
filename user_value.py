@@ -9,16 +9,20 @@ from sklearn.preprocessing import LabelEncoder
 
 current_path = os.path.dirname(os.path.realpath(__file__))
 user_feature_data = pd.read_csv(os.path.join(current_path, 'raw_datasets/user_feature_data.csv'), header=0)
-feature_col = user_feature_data.columns.tolist()[1:16]
+feature_col = user_feature_data.columns.tolist()[1:17]
 feature = user_feature_data.copy()
 customerid=LabelEncoder().fit_transform(feature['CustomerID'])
 feature['CustomerID']=customerid
 
 features1=preprocessing.StandardScaler().fit_transform(feature[feature_col])
 features1=pd.DataFrame(features1)
-features2 = feature[['CustomerID', 'Country']].copy()
+features2 = feature[['CustomerID']].copy()
 features3 = pd.concat([features2, features1], ignore_index=False, axis=1)
 features3.to_csv(os.path.join(current_path, 'raw_datasets/user_feat.csv'),index=None)
+user_vector_data = user_feature_data[['CustomerID']].copy()
+# user_vector_data['uv'] =
+
+
 
 item_feature_data = pd.read_csv(os.path.join(current_path, 'raw_datasets/item_feature_data.csv'), header=0)
 feature_col0 = item_feature_data.columns.tolist()[1:17]
