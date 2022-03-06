@@ -23,7 +23,7 @@ class WideGCN(GeneralRecommender):
     def __init__(self, config, dataset):
         super(WideGCN, self).__init__(config, dataset)
 
-        # user and item field names
+        # load user, item feat info
         self.field_names = dataset.fields(
             source=[
                 FeatureSource.USER,
@@ -31,9 +31,11 @@ class WideGCN(GeneralRecommender):
             ]
         )
 
+        # build double_tower
         self.double_tower = config['double_tower']
         if self.double_tower is None:
             self.double_tower = False
+
         self.token_field_names = []
         self.token_field_dims = []
         self.float_field_names = []
@@ -42,9 +44,33 @@ class WideGCN(GeneralRecommender):
         self.token_seq_field_dims = []
         self.num_feature_field = 0
 
-        if self.double_tower:
-            pass
+        if self.double_tower: # get user feat item feat nums
+            self.user_field_names = dataset.fields(source=[FeatureSource.USER, FeatureSource.USER_ID])
+            self.item_field_names = dataset.fields(source=[FeatureSource.ITEM, FeatureSource.ITEM_ID])
+            self.field_names = self.user_field_names + self.item_field_names
+            self.user_token_field_num = 0
+            self.user_float_field_num = 0
+            self.user_token_seq_field_num = 0
+            for field_name in self.user_field_names:
+                if dataset.field2type[field_name] == FeatureType.TOKEN:
+                    self.user_token_field_num += 1
+                elif dataset.field2type[field_name] == FeatureType.TOKEN_SEQ:
+                    self.user_token_seq_field_num += 1
+                else:
+                    self.user_float_field_num += dataset.num(field_name)
 
+            self.item_token_field_num = 0
+            self.item_float_field_num = 0
+            self.item_token_seq_field_num = 0
+            for field_name in self.item_field_names:
+                if dataset.field2type[field_name] == FeatureType.TOKEN:
+                    self.item_token_field_num += 1
+                elif dataset.field2type[field_name] == FeatureType.TOKEN_SEQ:
+                    self.item_token_seq_field_num += 1
+                else:
+                    self.item_float_field_num += dataset.num(field_name)
+
+        # count feat nums
         for field_name in self.field_names:
             if field_name[:3] == 'neg':
                 continue
@@ -56,38 +82,44 @@ class WideGCN(GeneralRecommender):
                 self.float_field_dims.append(dataset.num(field_name))
             self.num_feature_field += 1
 
+        # load parameters info
         self.lr_embedding_size = config['lr_embedding_size']
-
-        if len(self.token_field_dims) > 0:
-            self.token_field_offsets = np.array((0, *np.cumsum(self.token_field_dims)[:-1]), dtype=np.long)
-            self.token_embedding_table = FMEmbedding(
-                self.token_field_dims, self.token_field_offsets, self.embedding_size
-            )
-
-        if len(self.float_field_dims) > 0:
-            self.float_embedding_table = nn.Embedding(
-                np.sum(self.float_field_dims, dtype=np.int32), self.lr_embedding_size
-            )
-
-        # self.frist_order_linger = FMFirstOrderLinear(config, dataset)
         self.mlp_hidden_size = config['mlp_hidden_size']
         self.dropout_prob = config['dropout_prob']
 
-        # define layers and loss
-        size_list = [self.lr_embedding_size * self.num_feature_field] + self.mlp_hidden_size
-        self.mlp_layers = MLPLayers(size_list, self.dropout_prob)
+        self.cf_embedding_szie = config['cf_embedding_size']
+        self.latent_dim = config['cf_embedding_size']  # int type:the embedding size of lightGCN
+        self.n_layers = config['n_layers']  # int type:the layer num of lightGCN
+
+        self.reg_weight = config['reg_weight']  # float32 type: the weight decay for l2 normalization
 
         # load dataset info
         self.interaction_matrix = dataset.inter_matrix(form='coo').astype(np.float32)
 
-        # load parameters info
-        self.latent_dim = config['gcn_embedding_size']  # int type:the embedding size of lightGCN
-        self.n_layers = config['n_layers']  # int type:the layer num of lightGCN
-        self.reg_weight = config['reg_weight']  # float32 type: the weight decay for l2 normalization
 
         # define layers and loss
-        self.user_embedding = nn.Embedding(num_embeddings=self.n_users, embedding_dim=self.latent_dim)
-        self.item_embedding = nn.Embedding(num_embeddings=self.n_items, embedding_dim=self.latent_dim)
+        if len(self.token_field_dims) > 0: # 相当于使用 lgcn 取代这一部分
+            self.token_field_offsets = np.array((0, *np.cumsum(self.token_field_dims)[:-1]), dtype=np.long)
+            self.token_embedding_table = FMEmbedding(
+                self.token_field_dims, self.token_field_offsets, self.lr_embedding_size
+            )
+
+        if len(self.float_field_dims) > 0:
+            self.float_embedding_table = nn.Embedding(
+                np.sum(self.float_field_dims, dtype=np.int32), self.lr_embedding_size # 32 * 4 = 128 -> user 64 * 1 | item 64 * 1
+            )
+
+        if len(self.token_seq_field_dims) > 0:
+            self.token_seq_embedding_table = nn.ModuleList()
+            for token_seq_field_dim in self.token_seq_field_dims:
+                self.token_seq_embedding_table.append(nn.Embedding(token_seq_field_dim, self.lr_embedding_size))
+
+        size_list = [self.lr_embedding_size * self.num_feature_field] + self.mlp_hidden_size
+        self.mlp_layers = MLPLayers(size_list, self.dropout_prob)
+
+        self.u_cf_embedding = nn.Embedding(num_embeddings=self.n_users, embedding_dim=self.latent_dim)
+        self.i_cf_embedding = nn.Embedding(num_embeddings=self.n_items, embedding_dim=self.latent_dim)
+
         self.mf_loss = BPRLoss()
         self.reg_loss = EmbLoss()
 
@@ -159,14 +191,16 @@ class WideGCN(GeneralRecommender):
 
         u_embeddings = user_all_embeddings[user]
         pos_embeddings = item_all_embeddings[pos_item]
-        neg_embeddings = item_all_embeddings[neg_item] # gnn embedding
+        neg_embeddings = item_all_embeddings[neg_item]  # gnn embedding
 
-        widedeep_all_embeddings = self.concat_embed_input_fields(interaction, u_embeddings, pos_embeddings, neg_embeddings)  # 512 32 20
+        widedeep_all_embeddings = self.concat_embed_input_fields(interaction, u_embeddings, pos_embeddings,
+                                                                 neg_embeddings)  # 512 32 20
 
         return widedeep_all_embeddings, user_all_embeddings, item_all_embeddings
 
     def concat_embed_input_fields(self, interaction, u_embeddings, pos_embeddings, neg_embeddings):
-        sparse_embedding, dense_embedding = self.embed_input_fields(interaction, u_embeddings, pos_embeddings, neg_embeddings)
+        sparse_embedding, dense_embedding = self.embed_input_fields(interaction, u_embeddings, pos_embeddings,
+                                                                    neg_embeddings)
         all_embeddings = []
         if sparse_embedding is not None:
             all_embeddings.append(sparse_embedding)
@@ -192,9 +226,9 @@ class WideGCN(GeneralRecommender):
                 float_fields.append(interaction[field_name].unsqueeze(1))
         if len(float_fields) > 0:
             float_fields = torch.cat(float_fields, dim=1)  # [batch_size, num_float_field]
-        float_fields_embedding = self.embed_float_fields(float_fields) # float_fields 512 32
+        float_fields_embedding = self.embed_float_fields(float_fields)  # float_fields 512 32
 
-        token_fields = [] # may be concat lgn?
+        token_fields = []  # may be concat lgn?
         for field_name in self.token_field_names:
             token_fields.append(interaction[field_name].unsqueeze(1))
         if len(token_fields) > 0:

@@ -6,6 +6,7 @@
 # RATING_FIELD:
 'TIME_FIELD': 'timestamp'
 # seq_len: 1
+'double_tower': 'True'
 
 'filter_inter_by_user_or_item': False # if True, inter_feat will filter by user_feat and item_feat
 'load_col':
