@@ -5115,6 +5115,27 @@ class ECOMMERCEDataset(BaseDataset):
                             15: 'uv14:float',
                             16: 'uv15:float'
                             }
+        self.user_fields = {0: 'user_id:token',
+                            1: 'uv0:float',
+                            2: 'uv1:float',
+                            3: 'uv2:float',
+                            4: 'uv3:float',
+                            5: 'uv4:float',
+                            6: 'uv5:float',
+                            7: 'uv6:float',
+                            8: 'uv7:float',
+                            9: 'uv8:float',
+                            10: 'uv9:float',
+                            11: 'uv10:float',
+                            12: 'uv11:float',
+                            13: 'uv12:float',
+                            14: 'uv13:float',
+                            15: 'uv14:float',
+                            16: 'uv15:float'
+                            }
+        # self.item_fields = {0: 'item_id:token',
+        #                     1: 'iv:float',
+        #                     }
         # self.user_fields = {0: 'user_id:token',
         #                     1: 'uv:float_seq'
         #                     }

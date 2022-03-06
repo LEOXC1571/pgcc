@@ -46,9 +46,7 @@ class WideGCN(GeneralRecommender):
             pass
 
         for field_name in self.field_names:
-            if field_name[:4] == 'neg_':
-                continue
-            if field_name == 'Country':
+            if field_name[:3] == 'neg':
                 continue
             if dataset.field2type[field_name] == FeatureType.TOKEN:
                 self.token_field_names.append(field_name)
@@ -144,8 +142,6 @@ class WideGCN(GeneralRecommender):
         return ego_embeddings
 
     def forward(self, interaction):
-        widedeep_all_embeddings = self.concat_embed_input_fields(interaction)
-
         all_embeddings = self.get_ego_embeddings()
         embeddings_list = [all_embeddings]
 
@@ -157,10 +153,20 @@ class WideGCN(GeneralRecommender):
 
         user_all_embeddings, item_all_embeddings = torch.split(lightgcn_all_embeddings, [self.n_users, self.n_items])
 
-        return user_all_embeddings, item_all_embeddings
+        user = interaction[self.USER_ID]
+        pos_item = interaction[self.ITEM_ID]
+        neg_item = interaction[self.NEG_ITEM_ID]
 
-    def concat_embed_input_fields(self, interaction):
-        sparse_embedding, dense_embedding = self.embed_input_fields(interaction)
+        u_embeddings = user_all_embeddings[user]
+        pos_embeddings = item_all_embeddings[pos_item]
+        neg_embeddings = item_all_embeddings[neg_item] # gnn embedding
+
+        widedeep_all_embeddings = self.concat_embed_input_fields(interaction, u_embeddings, pos_embeddings, neg_embeddings)  # 512 32 20
+
+        return widedeep_all_embeddings, user_all_embeddings, item_all_embeddings
+
+    def concat_embed_input_fields(self, interaction, u_embeddings, pos_embeddings, neg_embeddings):
+        sparse_embedding, dense_embedding = self.embed_input_fields(interaction, u_embeddings, pos_embeddings, neg_embeddings)
         all_embeddings = []
         if sparse_embedding is not None:
             all_embeddings.append(sparse_embedding)
@@ -168,7 +174,7 @@ class WideGCN(GeneralRecommender):
             all_embeddings.append(dense_embedding)
         return torch.cat(all_embeddings, dim=1)  # [batch_size, num_field, embed_dim]
 
-    def embed_input_fields(self, interaction):
+    def embed_input_fields(self, interaction, u_embeddings, pos_embeddings, neg_embeddings):
         """Embed the whole feature columns.
 
         Args:
@@ -186,7 +192,7 @@ class WideGCN(GeneralRecommender):
                 float_fields.append(interaction[field_name].unsqueeze(1))
         if len(float_fields) > 0:
             float_fields = torch.cat(float_fields, dim=1)  # [batch_size, num_float_field]
-        float_fields_embedding = self.embed_float_fields(float_fields)
+        float_fields_embedding = self.embed_float_fields(float_fields) # float_fields 512 32
 
         token_fields = [] # may be concat lgn?
         for field_name in self.token_field_names:
@@ -246,8 +252,6 @@ class WideGCN(GeneralRecommender):
 
         return token_embedding
 
-
-
     def calculate_loss(self, interaction):
         # clear the storage variable when training
         if self.restore_user_e is not None or self.restore_item_e is not None:
@@ -257,7 +261,7 @@ class WideGCN(GeneralRecommender):
         pos_item = interaction[self.ITEM_ID]
         neg_item = interaction[self.NEG_ITEM_ID]
 
-        user_all_embeddings, item_all_embeddings = self.forward(interaction)
+        wide_embeddings, user_all_embeddings, item_all_embeddings = self.forward(interaction)
         u_embeddings = user_all_embeddings[user]
         pos_embeddings = item_all_embeddings[pos_item]
         neg_embeddings = item_all_embeddings[neg_item]
