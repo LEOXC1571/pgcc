@@ -132,19 +132,13 @@ class WideGCN(GeneralRecommender):
         self.mf_loss = BPRLoss()
         self.reg_loss = EmbLoss()
 
-        # storage variables for full sort evaluation acceleration
-        self.restore_user_mfe = None
-        self.restore_item_mfe = None
-        self.restore_user_fme = None
-        self.restore_item_fme = None
-
         # generate intermediate data
         self.norm_adj_matrix = self.get_norm_adj_mat().to(self.device)
 
         # parameters initialization
         # self.apply(xavier_uniform_initialization)
         self.apply(self._init_weights)
-        self.other_parameter_name = ['restore_user_e', 'restore_item_e']
+        # self.other_parameter_name = ['restore_user_e', 'restore_item_e']
 
     def _init_weights(self, module):
         if isinstance(module, nn.Embedding):
@@ -395,8 +389,8 @@ class WideGCN(GeneralRecommender):
 
     def calculate_loss(self, interaction):
         # clear the storage variable when training
-        if self.restore_user_mfe is not None or self.restore_item_mfe is not None:
-            self.restore_user_mfe, self.restore_item_mfe = None, None
+        # if self.restore_user_mfe is not None or self.restore_item_mfe is not None:
+        #     self.restore_user_mfe, self.restore_item_mfe = None, None
 
         user = interaction[self.USER_ID]
         pos_item = interaction[self.ITEM_ID]
@@ -445,10 +439,9 @@ class WideGCN(GeneralRecommender):
         item_batch_mf_embeddings = item_all_mf_embeddings[item]
         u_deep_output = self.user_mlp_layers(user_batch_fm_embeddings.view(-1, 64))
         i_deep_output = self.item_mlp_layers(item_batch_fm_embeddings.view(-1, 64))
+
         u_embeddings = torch.mean(torch.stack([u_deep_output, user_batch_mf_embeddings], dim=2),dim=2)
         i_embeddings = torch.mean(torch.stack([i_deep_output, item_batch_mf_embeddings], dim=2),dim=2)
-        # u_embeddings = torch.cat([u_deep_output, user_batch_mf_embeddings], dim=1)
-        # i_embeddings = torch.cat([i_deep_output, item_batch_mf_embeddings], dim=1)
 
         scores = torch.mul(u_embeddings, i_embeddings).sum(dim=1)
         return scores

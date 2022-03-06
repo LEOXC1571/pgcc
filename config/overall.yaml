@@ -13,9 +13,9 @@ save_dataloaders: False
 
 ## training arguments
 epochs: 100
-train_batch_size: 512
+train_batch_size: 2048
 learner: adam
-learning_rate: 0.0005
+learning_rate: 0.01
 # training_neg_sample_num: 1
 # training_neg_sample_distribution: uniform
 neg_sampling:
