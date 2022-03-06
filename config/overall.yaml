@@ -12,7 +12,7 @@ save_dataset: False
 save_dataloaders: False
 
 ## training arguments
-epochs: 3
+epochs: 100
 train_batch_size: 512
 learner: adam
 learning_rate: 0.0005
