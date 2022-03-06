@@ -10,9 +10,9 @@
 
 'filter_inter_by_user_or_item': False # if True, inter_feat will filter by user_feat and item_feat
 'load_col':
-  'inter': [ 'item_id', 'timestamp', 'user_id' ]
-  'item': [ 'item_id', 'iv0', 'iv1', 'iv2', 'iv3', 'iv4', 'iv5', 'iv6', 'iv7', 'iv8', 'iv9', 'iv10',  'iv11', 'iv12', 'iv13', 'iv14', 'iv15', ]
-  'user': [ 'user_id', 'Country','uv0', 'uv1', 'uv2', 'uv3', 'uv4', 'uv5','uv6', 'uv7', 'uv8', 'uv9', 'uv10','uv11','uv12','uv13','uv14', 'uv15' ]
+  'inter': [ 'item_id', 'timestamp', 'user_id']
+  'item': [ 'item_id', 'iv0', 'iv1', 'iv2', 'iv3', 'iv4', 'iv5', 'iv6', 'iv7', 'iv8', 'iv9', 'iv10',  'iv11', 'iv12', 'iv13', 'iv14', 'iv15']
+  'user': [ 'user_id', 'Country','uv0', 'uv1', 'uv2', 'uv3', 'uv4', 'uv5','uv6', 'uv7', 'uv8', 'uv9', 'uv10','uv11','uv12','uv13','uv14']
 #  'inter': [ 'StockCode', 'InvoiceDate', 'CustomerID' ]
 #  'item': [ 'StockCode', 'total_orders', 'total_sales' ]
 #  'user': [ 'CustomerID', 'user_total_orders', 'user_total_pur' ]

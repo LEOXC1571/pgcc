@@ -5075,9 +5075,9 @@ class ECOMMERCEDataset(BaseDataset):
         self.output_inter_file, self.output_item_file, self.output_user_file = self.get_output_files()
 
         # selected feature fields
-        self.inter_fields = {0: 'user_id:token',
+        self.inter_fields = {0: 'item_id:token',
                              1: 'timestamp:float',
-                             2: 'item_id:token'
+                             2: 'user_id:token'
                              }
         self.item_fields = {0: 'item_id:token',
                             1: 'iv0:float',
