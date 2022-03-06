@@ -11,8 +11,8 @@ current_path = os.path.dirname(os.path.realpath(__file__))
 user_feature_data = pd.read_csv(os.path.join(current_path, 'raw_datasets/user_feature_data.csv'), header=0)
 feature_col = user_feature_data.columns.tolist()[1:17]
 feature = user_feature_data.copy()
-customerid=LabelEncoder().fit_transform(feature['CustomerID'])
-feature['CustomerID']=customerid
+# customerid=LabelEncoder().fit_transform(feature['CustomerID'])
+# feature['CustomerID']=customerid
 
 features1=preprocessing.StandardScaler().fit_transform(feature[feature_col])
 features1=pd.DataFrame(features1)
