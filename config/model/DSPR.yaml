@@ -1,6 +1,0 @@
-'K' : 3
-'hid_neurons' : [3000, 300, 128]
-train_batch_size: 51200
-repeatable: False
-neg_sampling:
-  uniform: 127 # train neg sample? how useful?

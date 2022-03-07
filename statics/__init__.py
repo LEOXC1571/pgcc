@@ -19,9 +19,6 @@ recbole_models = {
 model_name_map = {
     'Pop': Pop,
     'BPR': BPR,
-    'BPR-T': ExtendedBPR,
-    'CFA': CFautoencoder,
-    'DSPR': DeepSimPersionalRec,
     'LGCN' : LightGCN,
     'NGCF': NGCF,
     'WGCN': WideGCN

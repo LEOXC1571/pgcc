@@ -1,0 +1,6 @@
+seed choice [2022]
+learning_rate choice [0.05,0.01,0.005,0.001]
+reg_weight choice [1e-04,1e-03,1e-02,1e-1]
+node_dropout choice [0.0, 0.1, 0.2]
+message_dropout choice [0.0, 0.1, 0.2]
+

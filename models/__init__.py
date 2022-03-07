@@ -6,9 +6,6 @@
 # @Mail      :miracleyin@live.com
 
 from .bpr import BPR
-from .bprt import ExtendedBPR
-from .cfa import CFautoencoder
-from .dspr import DeepSimPersionalRec
 from .lightgcn import LightGCN
 from .ngcf import NGCF
 from .widegcn import WideGCN
