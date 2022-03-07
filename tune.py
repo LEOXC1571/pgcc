@@ -33,8 +33,8 @@ def tune(model=None, dataset=None, params_name=None):
     hp = HyperTuning(objective_run, algo='exhaustive',
                      params_file=params_space, fixed_config_file_list=config_file_list)
     hp.run()
-    ensure_dir('hyper_experiment_1_18') # 自己手动记录一下实验开始的日期
-    hp.export_result(output_file=f'hyper_experiment_1_18/{model}-{dataset}.result')
+    ensure_dir('pgcc_3_7') # 自己手动记录一下实验开始的日期
+    hp.export_result(output_file=f'pgcc_3_7/{model}-{dataset}-{params_name}.result')
     print('best params: ', hp.best_params)
     print('best result: ')
     print(hp.params2result[hp.params2str(hp.best_params)])

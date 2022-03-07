@@ -407,12 +407,12 @@ class WideGCN(GeneralRecommender):
         pos_deep_output = self.item_mlp_layers(item_batch_fm_embeddings.view(-1, 64))
         neg_deep_output = self.item_mlp_layers(item_batch_fm_embeddings.view(-1, 64))
 
-        # u_embeddings = torch.cat([u_deep_output, user_batch_mf_embeddings], dim=1)
-        # pos_embeddings = torch.cat([pos_deep_output, posi_batch_mf_embeddings], dim=1)
-        # neg_embeddings = torch.cat([neg_deep_output, negi_batch_mf_embeddings], dim=1)
-        u_embeddings = torch.mean(torch.stack([u_deep_output, user_batch_mf_embeddings], dim=2),dim=2)
-        pos_embeddings = torch.mean(torch.stack([pos_deep_output, posi_batch_mf_embeddings], dim=2),dim=2)
-        neg_embeddings = torch.mean(torch.stack([neg_deep_output, negi_batch_mf_embeddings], dim=2),dim=2)
+        u_embeddings = torch.cat([u_deep_output, user_batch_mf_embeddings], dim=1)
+        pos_embeddings = torch.cat([pos_deep_output, posi_batch_mf_embeddings], dim=1)
+        neg_embeddings = torch.cat([neg_deep_output, negi_batch_mf_embeddings], dim=1)
+        # u_embeddings = torch.mean(torch.stack([u_deep_output, user_batch_mf_embeddings], dim=2),dim=2)
+        # pos_embeddings = torch.mean(torch.stack([pos_deep_output, posi_batch_mf_embeddings], dim=2),dim=2)
+        # neg_embeddings = torch.mean(torch.stack([neg_deep_output, negi_batch_mf_embeddings], dim=2),dim=2)
 
         # calculate BPR Loss
         pos_scores = torch.mul(u_embeddings, pos_embeddings).sum(dim=1)
@@ -440,8 +440,11 @@ class WideGCN(GeneralRecommender):
         u_deep_output = self.user_mlp_layers(user_batch_fm_embeddings.view(-1, 64))
         i_deep_output = self.item_mlp_layers(item_batch_fm_embeddings.view(-1, 64))
 
-        u_embeddings = torch.mean(torch.stack([u_deep_output, user_batch_mf_embeddings], dim=2),dim=2)
-        i_embeddings = torch.mean(torch.stack([i_deep_output, item_batch_mf_embeddings], dim=2),dim=2)
+        u_embeddings = torch.cat([u_deep_output, user_batch_mf_embeddings], dim=1)
+        i_embeddings = torch.cat([i_deep_output, item_batch_mf_embeddings], dim=1)
+
+        # u_embeddings = torch.mean(torch.stack([u_deep_output, user_batch_mf_embeddings], dim=2),dim=2)
+        # i_embeddings = torch.mean(torch.stack([i_deep_output, item_batch_mf_embeddings], dim=2),dim=2)
 
         scores = torch.mul(u_embeddings, i_embeddings).sum(dim=1)
         return scores

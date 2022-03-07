@@ -1,0 +1,5 @@
+seed choice [2020]
+learning_rate choice [0.05,0.01,0.005,0.001]
+n_layers choice [1,2,3]
+reg_weight choice [1e-04,1e-03,1e-02]
+dropout_prob choice [0.1, 0.2, 0.3]

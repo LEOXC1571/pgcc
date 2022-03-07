@@ -1,24 +1,19 @@
-#python tune.py --model BPR-T --dataset movielens --params bprt
-#python tune.py --model BPR-T --dataset lastfm --params bprt
-#python tune.py --model BPR-T --dataset delicious --params bprt
+# for pgcc hypers experments
+# 2022.3.7@ Miracleyin
+# run in conda env
 
-#python tune.py --model CFA --dataset movielens --params cfa
-#python tune.py --model CFA --dataset lastfm --params cfa
-#python tune.py --model CFA --dataset delicious --params cfa
+# base bpr
+# kill all python
+sudo ps -ef | grep "python tune.py" | cut -c 9-16|sudo  xargs kill -s 9
 
-#python tune.py --model DSPR --dataset movielens --params dspr
-#python tune.py --model DSPR --dataset lastfm --params dspr
-#python tune.py --model DSPR --dataset delicious --params dspr
-#
-#python tune.py --model BPR --dataset movielens --params bpr
-#python tune.py --model BPR --dataset lastfm --params bpr
-#python tune.py --model BPR --dataset delicious --params bpr
-#
-#python tune.py --model LGCN --dataset movielens --params lgcn
-#python tune.py --model LGCN --dataset lastfm --params lgcn
-#python tune.py --model LGCN --dataset delicious --params lgcn
-
-python tune.py --model LGCN --dataset ecommerce --params lgcn
+# run experiments
+# run a model all seed if you can
+# if memory out, less some experiments
+python tune.py --model NGCF --dataset ecommerce --params bpr2019 &
+python tune.py --model NGCF --dataset ecommerce --params bpr2020 &
+python tune.py --model NGCF --dataset ecommerce --params bpr2021 &
+python tune.py --model NGCF --dataset ecommerce --params bpr2022 &
+python tune.py --model NGCF --dataset ecommerce --params bpr2023 &
 
 
 
