@@ -113,4 +113,4 @@ if __name__ == '__main__':
     model_name = args.model
     dataset_name = args.dataset
 
-    run(model_name, dataset_name)
+    run(model_name, dataset_name, saved=True)

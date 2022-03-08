@@ -2,11 +2,19 @@
 <project version="4">
   <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
-      <paths name="alpha@101.43.83.29:7001">
+      <paths name="alpha@101.43.83.29:7001 password">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/home1/zhangyin/workplace/DA/pgcc" local="$PROJECT_DIR$" web="/" />
           </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/.idea" />
+            <excludedPath local="true" path="$PROJECT_DIR$/saved" />
+            <excludedPath local="true" path="$PROJECT_DIR$/dataset" />
+            <excludedPath local="true" path="$PROJECT_DIR$/raw_datasets" />
+            <excludedPath local="true" path="$PROJECT_DIR$/log" />
+            <excludedPath local="true" path="$PROJECT_DIR$/log_tensorboard" />
+          </excludedPaths>
         </serverdata>
       </paths>
     </serverData>
