@@ -1,4 +1,7 @@
-.idea
 .__pycache__
 .idea
+log
+log_tensorboard
+saved
+outputs
 
